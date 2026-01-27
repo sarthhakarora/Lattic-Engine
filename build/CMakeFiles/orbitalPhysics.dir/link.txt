@@ -1,3 +1,0 @@
-"C:\Program Files\CMake\bin\cmake.exe" -E rm -f CMakeFiles\orbitalPhysics.dir/objects.a
-C:\msys64\mingw64\bin\ar.exe qc CMakeFiles\orbitalPhysics.dir/objects.a @CMakeFiles\orbitalPhysics.dir\objects1.rsp
-C:\msys64\mingw64\bin\gcc.exe -Wl,--whole-archive CMakeFiles\orbitalPhysics.dir/objects.a -Wl,--no-whole-archive -o orbitalPhysics.exe -Wl,--out-implib,liborbitalPhysics.dll.a -Wl,--major-image-version,0,--minor-image-version,0 @CMakeFiles\orbitalPhysics.dir\linkLibs.rsp

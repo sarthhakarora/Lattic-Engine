@@ -2,6 +2,7 @@
 #include "raylib.h"
 #include "string.h"
 #include "planet.h"
+#include "stdlib.h"
 #include <stdio.h>
 #include "raymath.h"
 
@@ -97,4 +98,13 @@ void world_update(World *world)
         world->planets[p].position = Vector3Add(world->planets[p].position, Vector3Add(Vector3Scale(world->planets[p].velocity, world->deltaTime), Vector3Scale(old_acceleration, (0.5f * world->deltaTime * world->deltaTime))));
         world->planets[p].velocity = Vector3Add(world->planets[p].velocity, Vector3Scale(Vector3Add(old_acceleration, world->planets[p].acceleration), world->deltaTime * 0.5f));
     }
+}
+
+void world_destroy(World *world) {
+    for(int i = 0; i < world->planet_count; i++) {
+        planet_destroy(&world->planets[i]);
+    }
+    
+    free(world->planets);
+    world->planets = NULL;
 }

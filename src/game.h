@@ -4,7 +4,6 @@
 
 #include "camera.h"
 #include "world.h"
-#include "skybox.h"
 #include "planet.h"
 
 typedef struct {
@@ -14,8 +13,6 @@ typedef struct {
 
     Cam camera;
     World world;
-
-    Skybox skybox;
     
 } Game;
 

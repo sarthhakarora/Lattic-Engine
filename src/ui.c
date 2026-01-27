@@ -9,7 +9,8 @@
 
 typedef enum {
     PANEL_GLOBAL,
-    PANEL_PLANET
+    PANEL_PLANET,
+    PANEL_CREATE
 } UiPanel;
 
 static void styling() {
@@ -86,6 +87,7 @@ void ui(World *world){
         300, 
         GetScreenHeight()
     };
+
     static bool windowOpen = true;
     static bool menuActive = true;
 
@@ -106,6 +108,9 @@ void ui(World *world){
         if (GuiButton((Rectangle){content.x, content.y, content.width, 30}, "Global Settings")) {
             currentPanel = PANEL_GLOBAL;
         }
+        if (GuiButton((Rectangle){content.x, content.y, content.width, 30}, "Global Settings")) {
+            currentPanel = PANEL_GLOBAL;
+        }
         float y = content.y + 40;
         for (int i = 0; i < world->planet_count; i++) {
             if (GuiButton((Rectangle){content.x, y, content.width, 30}, world->planets[i].name)) {
@@ -118,6 +123,7 @@ void ui(World *world){
         if(currentPanel == PANEL_GLOBAL) {
             slider(&world->gravity_strength, 30.0f, 100.0f, "Gravity", NULL, 3, content, false);
             slider(&world->deltaTime, 0.0f, 2.0f, "Time Speed", NULL, 4, content, true);
+            
         }
 
         world->count_g = 0;

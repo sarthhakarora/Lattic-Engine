@@ -17,3 +17,4 @@ typedef struct {
 World world_create(Planet* planets, int planet_count);
 void world_update(World* world);
 void world_draw(World* world);
+void world_destroy(World* world);

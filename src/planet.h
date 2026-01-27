@@ -23,3 +23,4 @@ Planet planet_create(char* name, char* texture_path, float radius, Vector3 posit
 void remake_model(Planet *planet);
 void planet_draw(Planet *planet);
 void planet_update(Planet *planet);
+void planet_destroy(Planet *planet);

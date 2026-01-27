@@ -3,7 +3,6 @@
 #include "stdlib.h"
 
 #include "game.h"
-#include "skybox.h"
 #include "planet.h"
 #include "world.h"
 #include "camera.h"
@@ -16,7 +15,6 @@ Game game_create(void) {
         .game_active = true,
 
         .camera = create_camera(),
-        .skybox = create_skybox(),
    };
 
     SetConfigFlags(FLAG_MSAA_4X_HINT);
@@ -38,15 +36,15 @@ Game game_create(void) {
 
     Planet* planets = malloc(capacity * sizeof(Planet));
 
-    planets[count++] = earth;
-    planets[count++] = sun;
-    planets[count++] = jupiter;
-    planets[count++] = mars;
-
     if(count >= capacity) {
         capacity *= 2;
         planets = realloc(planets, capacity * sizeof(Planet));
     }
+
+    planets[count++] = earth;
+    planets[count++] = sun;
+    planets[count++] = jupiter;
+    planets[count++] = mars;
 
     game.world = world_create(planets, count);
 
@@ -90,24 +88,15 @@ static void game_draw(Game *game) {
     BeginMode3D(game->camera.camera);
     ClearBackground(BLACK);
 
-    enable_cursor(&game->camera);
-    fullscreen();
-    pause_time(&game->world);
 
     DrawGrid(1000, 2.0f);
-    update_camera(&game->camera);
-
-    draw_skybox(&game->skybox, game->camera.camera);
-
     world_draw(&game->world);
-    world_update(&game->world);
 
     EndMode3D();
 
     DrawFPS(10, 10);
 
     ui(&game->world);
-
     EndDrawing();
 }
 
@@ -116,6 +105,13 @@ static void game_update(Game *game)
     if (IsKeyPressed(KEY_ESCAPE)) {
         game->game_active = false;
     }
+
+    enable_cursor(&game->camera);
+    fullscreen();
+    pause_time(&game->world);
+
+    world_update(&game->world);
+    update_camera(&game->camera);
 }
 void game_run(Game *game) {
     while (game->game_active == true && !WindowShouldClose())
@@ -127,6 +123,5 @@ void game_run(Game *game) {
 }
 void game_destroy(Game *game) {
     CloseWindow();
-    free(game->world.planets);
-    game->world.planets = NULL;
+    world_destroy(&game->world);
 }

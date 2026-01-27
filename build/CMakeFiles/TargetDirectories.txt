@@ -1,4 +1,0 @@
-C:/dev/OrbitalPhysicsSimulator/build/CMakeFiles/orbitalPhysics.dir
-C:/dev/OrbitalPhysicsSimulator/build/CMakeFiles/run.dir
-C:/dev/OrbitalPhysicsSimulator/build/CMakeFiles/edit_cache.dir
-C:/dev/OrbitalPhysicsSimulator/build/CMakeFiles/rebuild_cache.dir
