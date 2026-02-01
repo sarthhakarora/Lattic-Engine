@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include "raylib.h"
 
-Planet planet_create(char* name, char* texture_path, float radius, Vector3 position, int rings, int slices, float mass, float speed, bool has_gravity) 
+Planet planet_create(char* name, char* texture_path, float radius, Vector3 position, int rings, int slices, int mass, bool has_gravity) 
 {
     Image img = LoadImage(texture_path);
     Planet planet = {
@@ -19,7 +19,6 @@ Planet planet_create(char* name, char* texture_path, float radius, Vector3 posit
         .mass = mass,
         .has_gravity = has_gravity,
         .perpendicular_direction = (Vector3){0.0f, 0.0f, 0.0f},
-        .speed = speed,
         .acceleration = (Vector3){0.0f, 0.0f, 0.0f},
         .velocity = {0.0f, 0.0f, 0.0f},
     };
@@ -52,7 +51,6 @@ void remake_model(Planet *planet) {
     Mesh mesh = GenMeshSphere(planet->radius, planet->rings, planet->slices);
     planet->model = LoadModelFromMesh(mesh);
 
-    planet->model = LoadModelFromMesh(mesh); 
     planet->model.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = planet->texture;
     planet->model.transform = MatrixRotateY(PI);
 
@@ -65,16 +63,18 @@ void planet_draw(Planet *planet)
 
 void planet_update(Planet *planet)
 {
-    planet->model.transform = MatrixRotateY(GetTime() * 0.1f);
-    planet->model.transform = MatrixRotateX(GetTime() * 0.1f);
+    planet->model.transform = MatrixMultiply(
+        MatrixRotateY(GetTime() * 0.1f),
+        MatrixRotateX(GetTime() * 0.1f)
+    );
 }
 
 void planet_destroy(Planet *planet) {
     UnloadModel(planet->model);
     UnloadTexture(planet->texture);
 
-    free(&planet->name);
-    free(&planet->texture_path);
+    free(planet->name);
+    free(planet->texture_path);
 
     planet->name = NULL;
     planet->texture_path = NULL;

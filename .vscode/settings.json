@@ -1,0 +1,12 @@
+{
+  "cmake.configureOnOpen": false,
+  "cmake.generator": "Ninja",
+  "cmake.buildDirectory": "${workspaceFolder}/build",
+
+  "cmake.configureSettings": {
+    "CMAKE_BUILD_TYPE": "Debug",
+    "CMAKE_C_COMPILER": "gcc",
+    "CMAKE_CXX_COMPILER": "g++",
+    "CMAKE_EXPORT_COMPILE_COMMANDS": true
+  }
+}

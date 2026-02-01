@@ -1,10 +1,13 @@
 #include <stdio.h>
 #include "raylib.h"
-#include "game.h"
+#include "core.h"
 
-int main(void) {
-    Game game = game_create();
-    game_run(&game);
-    game_destroy(&game);
+int main(int argc, char **argv) {
+    CoreArgs args = core_parce_args(argc, argv);
+
+    Core core = core_create(args);
+    core_run(&core);
+    core_destroy(&core);
+
     return 0;
 }

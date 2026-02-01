@@ -5,17 +5,20 @@ project(orbitalPhysics LANGUAGES C CXX)
 
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_BUILD_TYPE Debug)
 
 # --- executable ---
 add_executable(orbitalPhysics
     # C files
     src/main.c
-    src/game.c
+    src/core.c
     src/timer.c
     src/camera.c
     src/planet.c
     src/world.c
-    src/ui.c
+    src/ui/ui.c
+    src/ui/ui_widgets.c
+    src/platform/platform_win32.c
 
 )
 
@@ -38,4 +41,11 @@ add_custom_target(run
     COMMAND orbitalPhysics
     DEPENDS orbitalPhysics
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+)
+
+# --- copy assets next to the executable (runtime layout) ---
+add_custom_command(TARGET orbitalPhysics POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+            ${CMAKE_SOURCE_DIR}/assets
+            $<TARGET_FILE_DIR:orbitalPhysics>/assets
 )

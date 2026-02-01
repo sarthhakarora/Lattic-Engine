@@ -6,11 +6,12 @@
 #include <stdio.h>
 #include "raymath.h"
 
-World world_create(Planet *planets, int planet_count)
+World world_create()
 {
     World world = {
-        .planets = planets,
-        .planet_count = planet_count,
+        .planets = malloc(sizeof(Planet) * 8),
+        .planet_count = 0,
+        .planet_capacity = 8,
         .gravity_strength = 50.0f,
         .deltaTime = 0.1f,
     };
@@ -44,6 +45,27 @@ World world_create(Planet *planets, int planet_count)
    }
 
     return world;
+}
+
+bool world_add_planet(Planet planet, World *world)
+{
+    if(!world) return false;
+
+    if(world->planet_count >= world->planet_capacity) {
+        int new_cap = world->planet_capacity * 2;
+        Planet *new_planets = realloc(
+            world->planets,
+            new_cap * sizeof(Planet)
+        );
+
+        if(!new_planets) return false;
+         
+        world->planets = new_planets;
+        world->planet_capacity = new_cap;
+    }
+
+    world->planets[world->planet_count++] = planet;
+    return true; 
 }
 
 void world_draw(World *world) {

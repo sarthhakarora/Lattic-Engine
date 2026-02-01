@@ -1,0 +1,143 @@
+#include "raylib.h"
+#include "raymath.h"
+#include "stdlib.h"
+#include "platform/platform_win32.h"
+
+#include "core.h"
+#include "planet.h"
+#include "world.h"
+#include "camera.h"
+#include "ui/ui.h"
+
+CoreArgs core_parce_args(int argc, char **argv)
+{
+    CoreArgs args = {0};
+    
+    for(int i = 1; i < argc; i++) {
+        if(strcmp(argv[i], "--showlogs") == 0) {
+            args.show_logs = true;
+        }
+    }
+
+    return args;
+}
+
+Core core_create(CoreArgs args) {
+    ChangeDirectory(GetApplicationDirectory());
+
+    Core core = {
+        .screenWidth = 1080,
+        .screenHeight = 720,
+        .core_active = true,
+
+        .camera = create_camera(),
+   };
+
+    SetConfigFlags(FLAG_MSAA_4X_HINT);
+    SetConfigFlags(FLAG_WINDOW_RESIZABLE);
+
+    #ifdef ORBITAL_RELEASE
+        if(!args.show_logs) {
+            SetTraceLogLevel(LOG_NONE);
+        }
+    #endif
+
+    InitWindow(core.screenWidth, core.screenHeight, "Orbital Physics Simulator");
+
+    SetTargetFPS(60);
+    DisableCursor();
+
+    core.camera = create_camera();
+    /*
+    Planet earth = planet_create("earth", "assets/graphics/earth.jpg", 10.0f, (Vector3){200.0f, 0.0f, 0.0f}, 32, 32, 1, false);
+    Planet mars = planet_create("mars", "assets/graphics/mars.jpg", 10.0f, (Vector3){-250.0f, 0.0f, 0.0f}, 32, 32, 1, false);
+    Planet sun = planet_create("sun", "assets/graphics/sun.jpg", 30.0f, (Vector3){0.0f, 200.0f, 0.0f}, 48, 48, 1000, true);
+    Planet jupiter = planet_create("jupiter", "assets/graphics/jupiter.jpg", 30.0f, (Vector3){0.0f, 0.0f, 0.0f}, 48, 48, 1000, true);
+    */
+
+    /*
+    planets[count++] = earth;
+    planets[count++] = sun;
+    planets[count++] = jupiter;
+    planets[count++] = mars;
+    */
+
+    core.world = world_create();
+
+    return core;
+}
+
+static void enable_cursor(Cam *camera) {
+    if (IsKeyPressed(KEY_ENTER)) {
+        EnableCursor();
+        camera->rotate_active = false;
+    } 
+    else if (IsKeyPressed(KEY_RIGHT_SHIFT)) {
+        DisableCursor();
+        camera->rotate_active = true;
+    }
+}
+
+static void fullscreen() {
+    if(IsKeyPressed(KEY_F11) && IsWindowFullscreen() == false) {
+        SetWindowMinSize(GetMonitorWidth(0), GetMonitorHeight(0));
+        SetWindowState(FLAG_FULLSCREEN_MODE);
+    }
+    else if(IsKeyPressed(KEY_F11) && IsWindowFullscreen() == true) {
+        ClearWindowState(FLAG_FULLSCREEN_MODE);
+    }
+}
+
+static void pause_time(World *world) {
+    static float old_deltaTime = 0.0f;
+    if(IsKeyPressed(KEY_P) && world->deltaTime != 0) {
+        old_deltaTime = world->deltaTime;
+        world->deltaTime = 0;
+    }
+    else if(IsKeyPressed(KEY_P) && world->deltaTime == 0) {
+        world->deltaTime = old_deltaTime;
+    }
+}
+
+static void core_draw(Core *core) {
+    BeginDrawing();
+    BeginMode3D(core->camera.camera);
+    ClearBackground(BLACK);
+
+
+    DrawGrid(1000, 2.0f);
+    world_draw(&core->world);
+
+    EndMode3D();
+
+    DrawFPS(10, 10);
+
+    ui(&core->world);
+    EndDrawing();
+}
+
+static void core_update(Core *core)
+{
+    if (IsKeyPressed(KEY_ESCAPE)) {
+        core->core_active = false;
+    }
+
+    enable_cursor(&core->camera);
+    fullscreen();
+    pause_time(&core->world);
+
+    world_update(&core->world);
+    update_camera(&core->camera);
+}
+void core_run(Core *core) {
+    while (core->core_active == true && !WindowShouldClose())
+    {
+        core_update(core);
+        core_draw(core);
+    }
+    
+}
+void core_destroy(Core *core) {
+    CloseWindow();
+    world_destroy(&core->world);
+}
