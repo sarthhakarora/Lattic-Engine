@@ -6,6 +6,38 @@
 #include <stdio.h>
 #include "raymath.h"
 
+static void initorbit(World *world) {
+    world->count_g = 0;
+    world->count_ng = 0;
+
+    for (int i = 0; i < world->planet_count; i++) {
+        if(world->planets[i].has_gravity == true) {
+            world->gravity_planet_indexs[world->count_g++] = i;
+        }
+
+        if(world->planets[i].has_gravity == false) {
+            world->non_gravity_planet_indexs[world->count_ng++] = i;
+        }
+    }
+
+    Vector3 up = (Vector3){0.0f, 1.0f, 0.0f};
+    int sun = world->gravity_planet_indexs[0];
+
+    for(int j = 0; j < world->count_ng; j++) {
+        int p = world->non_gravity_planet_indexs[j];
+        Vector3 r = Vector3Subtract(world->planets[p].position, world->planets[sun].position);
+
+        float distance = Vector3Length(r);
+        Vector3 perpendicular_direction = Vector3Normalize(Vector3CrossProduct(up, r)); 
+
+        float speed = sqrt(world->gravity_strength * world->planets[sun].mass / distance);
+        world->planets[p].velocity = Vector3Scale(perpendicular_direction, speed);
+        world->planets[p].acceleration = (Vector3) {0, 0, 0};
+   }
+
+
+}
+
 World world_create()
 {
     World world = {
@@ -17,33 +49,7 @@ World world_create()
         .deltaTime = 0.1f,
     };
 
-    world.count_g = 0;
-    world.count_ng = 0;
-
-    for (int i = 0; i < world.planet_count; i++) {
-        if(world.planets[i].has_gravity == true) {
-            world.gravity_planet_indexs[world.count_g++] = i;
-        }
-
-        if(world.planets[i].has_gravity == false) {
-            world.non_gravity_planet_indexs[world.count_ng++] = i;
-        }
-    }
-
-    Vector3 up = (Vector3){0.0f, 1.0f, 0.0f};
-    int sun = world.gravity_planet_indexs[0];
-
-    for(int j = 0; j < world.count_ng; j++) {
-        int p = world.non_gravity_planet_indexs[j];
-        Vector3 r = Vector3Subtract(world.planets[p].position, world.planets[sun].position);
-
-        float distance = Vector3Length(r);
-        Vector3 perpendicular_direction = Vector3Normalize(Vector3CrossProduct(up, r)); 
-
-        float speed = sqrt(world.gravity_strength * world.planets[sun].mass / distance);
-        world.planets[p].velocity = Vector3Scale(perpendicular_direction, speed);
-        world.planets[p].acceleration = (Vector3) {0, 0, 0};
-   }
+    initorbit(&world);
 
     return world;
 }
@@ -66,6 +72,9 @@ bool world_add_planet(Planet planet, World *world)
     }
 
     world->planets[world->planet_count++] = planet;
+
+    initorbit(world);
+
     return true; 
 }
 

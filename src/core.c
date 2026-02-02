@@ -34,9 +34,6 @@ Core core_create(CoreArgs args) {
         .camera = create_camera(),
    };
 
-    Core *global_core = NULL;
-    global_core = &core;
-
     SetConfigFlags(FLAG_MSAA_4X_HINT);
     SetConfigFlags(FLAG_WINDOW_RESIZABLE);
 
@@ -66,8 +63,6 @@ Core core_create(CoreArgs args) {
     planets[count++] = mars;
     */
 
-    init_luaapi();
-    
     core.active_world = (World){0};
     core.active_world.valid = false;
     

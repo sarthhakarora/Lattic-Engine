@@ -22,11 +22,13 @@ add_executable(orbitalPhysics
 target_include_directories(orbitalPhysics PRIVATE
     ${CMAKE_SOURCE_DIR}/include
     ${CMAKE_SOURCE_DIR}/external/nuklear
-    ${CMAKE_SOURCE_DIR}/external/lua
 )
 
 target_link_libraries(orbitalPhysics PRIVATE
-    ${CMAKE_SOURCE_DIR}/lib/lua/liblua.a
+    ${CMAKE_SOURCE_DIR}/lib/libraylib.a
+)
+target_link_libraries(orbitalPhysics PRIVATE
+    ${CMAKE_SOURCE_DIR}/lib/lua/liblua54.a
 )
 
 if (WIN32)
@@ -43,4 +45,16 @@ add_custom_command(TARGET orbitalPhysics POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory
             ${CMAKE_SOURCE_DIR}/assets
             $<TARGET_FILE_DIR:orbitalPhysics>/assets
+)
+
+add_custom_command(TARGET orbitalPhysics POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            ${CMAKE_SOURCE_DIR}/lib/raylib.dll
+            $<TARGET_FILE_DIR:orbitalPhysics>
+)
+
+add_custom_command(TARGET orbitalPhysics POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            ${CMAKE_SOURCE_DIR}/lib/lua/lua54.dll
+            $<TARGET_FILE_DIR:orbitalPhysics>
 )
