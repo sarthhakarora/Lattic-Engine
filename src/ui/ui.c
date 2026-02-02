@@ -132,7 +132,10 @@ void ui(World *world){
             if(IsKeyPressed(KEY_G)) {
                 Planet buffer = planet_create(name, texturepath, radius, (Vector3){x, y, z}, rings, slices, mass, has_gravity);
 
-                world_add_planet(buffer, world);
+             
+                if(!world_add_planet(buffer, world)) {
+                    platform_throw_error("Ran out of memory while trying to make planet", "Memory error", PLATFORM_SYSTEM_MODAL|PLATFORM_MSG_OK);
+                }
             }
           
         }

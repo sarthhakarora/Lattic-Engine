@@ -4,6 +4,8 @@
 #include "planet.h"
 
 typedef struct {
+    bool valid;
+
     Planet* planets;
     int planet_count;
     unsigned int planet_capacity;

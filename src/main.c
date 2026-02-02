@@ -6,6 +6,7 @@ int main(int argc, char **argv) {
     CoreArgs args = core_parce_args(argc, argv);
 
     Core core = core_create(args);
+    Core *g_core = &core;
     core_run(&core);
     core_destroy(&core);
 

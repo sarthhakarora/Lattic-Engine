@@ -9,6 +9,7 @@
 World world_create()
 {
     World world = {
+        .valid = true,
         .planets = malloc(sizeof(Planet) * 8),
         .planet_count = 0,
         .planet_capacity = 8,

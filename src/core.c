@@ -8,6 +8,7 @@
 #include "world.h"
 #include "camera.h"
 #include "ui/ui.h"
+#include "luaapi/luaapi.h"
 
 CoreArgs core_parce_args(int argc, char **argv)
 {
@@ -32,6 +33,9 @@ Core core_create(CoreArgs args) {
 
         .camera = create_camera(),
    };
+
+    Core *global_core = NULL;
+    global_core = &core;
 
     SetConfigFlags(FLAG_MSAA_4X_HINT);
     SetConfigFlags(FLAG_WINDOW_RESIZABLE);
@@ -62,8 +66,11 @@ Core core_create(CoreArgs args) {
     planets[count++] = mars;
     */
 
-    core.world = world_create();
-
+    init_luaapi();
+    
+    core.active_world = (World){0};
+    core.active_world.valid = false;
+    
     return core;
 }
 
@@ -105,14 +112,19 @@ static void core_draw(Core *core) {
     ClearBackground(BLACK);
 
 
-    DrawGrid(1000, 2.0f);
-    world_draw(&core->world);
+    if(core->active_world.valid) {
+        DrawGrid(1000, 2.0f);
+        world_draw(&core->active_world);
+    }
 
     EndMode3D();
 
     DrawFPS(10, 10);
 
-    ui(&core->world);
+    if(core->active_world.valid) {
+        ui(&core->active_world);
+    }
+
     EndDrawing();
 }
 
@@ -124,9 +136,11 @@ static void core_update(Core *core)
 
     enable_cursor(&core->camera);
     fullscreen();
-    pause_time(&core->world);
 
-    world_update(&core->world);
+    if(core->active_world.valid) {
+        pause_time(&core->active_world);
+        world_update(&core->active_world);
+    }
     update_camera(&core->camera);
 }
 void core_run(Core *core) {
@@ -139,5 +153,7 @@ void core_run(Core *core) {
 }
 void core_destroy(Core *core) {
     CloseWindow();
-    world_destroy(&core->world);
+    if(core->active_world.valid) {
+        world_destroy(&core->active_world);
+    }
 }

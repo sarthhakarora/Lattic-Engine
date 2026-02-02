@@ -13,7 +13,7 @@ typedef struct {
     bool core_active;
 
     Cam camera;
-    World world;
+    World active_world;
     
 } Core;
 
