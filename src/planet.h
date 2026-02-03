@@ -1,12 +1,14 @@
 #pragma once
 
 #include "raylib.h"
+#include <stdbool.h>
+#include "assetmanager.h"
 
 typedef struct {
     char* name;
     char* texture_path;
+    ManagedTexture *texture;
     Model model;
-    Texture2D texture;
     float radius;
     Vector3 position;
     int rings;

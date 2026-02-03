@@ -18,8 +18,14 @@ typedef struct {
     int last_value;
 } UiIntState;
 
+typedef struct {
+    char label[128];
+    char right_label[128];
+} UiSliderState;
+
+
 void styling();
-void UiSlider(float *val, float min, float max, char text[], char righttext[], int row, Rectangle content, bool percentage_mode);
+void UiSlider(UiSliderState *state, float *val, float min, float max, const char* text, const char* righttext, int row, Rectangle content, bool percentage_mode);
 void toggle_menu(bool *menu);
 bool check_validation_text(const char *s, size_t max_len);
 bool UiTextInput(Rectangle content, char *text, int textSize);

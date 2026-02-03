@@ -10,6 +10,8 @@
 #include "ui/ui.h"
 #include "luaapi/luaapi.h"
 
+#define ORBITAL_RELEASE
+
 CoreArgs core_parce_args(int argc, char **argv)
 {
     CoreArgs args = {0};
@@ -31,8 +33,12 @@ Core core_create(CoreArgs args) {
         .screenHeight = 720,
         .core_active = true,
 
+        .bootTime = 0.0f,
+        .bootStart = 0.0f,
+        .isFirstFrame = true,
+
         .camera = create_camera(),
-   };
+    };
 
     SetConfigFlags(FLAG_MSAA_4X_HINT);
     SetConfigFlags(FLAG_WINDOW_RESIZABLE);
@@ -45,10 +51,13 @@ Core core_create(CoreArgs args) {
 
     InitWindow(core.screenWidth, core.screenHeight, "Orbital Physics Simulator");
 
+    core.bootStart = GetTime();
+
     SetTargetFPS(60);
     DisableCursor();
 
     core.camera = create_camera();
+
     /*
     Planet earth = planet_create("earth", "assets/graphics/earth.jpg", 10.0f, (Vector3){200.0f, 0.0f, 0.0f}, 32, 32, 1, false);
     Planet mars = planet_create("mars", "assets/graphics/mars.jpg", 10.0f, (Vector3){-250.0f, 0.0f, 0.0f}, 32, 32, 1, false);
@@ -143,6 +152,12 @@ void core_run(Core *core) {
     {
         core_update(core);
         core_draw(core);
+
+        if(core->isFirstFrame) {
+            double now = GetTime();
+            printf("--------------------------------\nBOOT: %.3fms taken to boot\n--------------------------------\n", (now - core->bootTime) * 1000);
+            core->isFirstFrame = false;
+        }
     }
     
 }

@@ -6,7 +6,7 @@
 typedef struct {
     bool valid;
 
-    Planet* planets;
+    Planet **planets;
     int planet_count;
     unsigned int planet_capacity;
     float gravity_strength;
@@ -18,7 +18,7 @@ typedef struct {
 } World;
 
 World world_create();
-bool world_add_planet(Planet planet, World *world);
+bool world_add_planet(Planet *planet, World *world);
 void world_update(World* world);
 void world_draw(World* world);
 void world_destroy(World* world);

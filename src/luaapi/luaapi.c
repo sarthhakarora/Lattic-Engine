@@ -97,7 +97,8 @@ int l_world_add_planet(lua_State *L)
     bool has_gravity = lua_toboolean(L, -1);
     lua_pop(L, 1);
 
-    Planet p = planet_create(
+    Planet *p = malloc(sizeof(Planet));
+    *p = planet_create(
         (char*)name,
         (char*)texturepath,
         radius,

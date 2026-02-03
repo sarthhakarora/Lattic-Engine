@@ -48,23 +48,23 @@ void styling() {
 
 }
 
-void UiSlider(float *val, float min, float max, char text[], char righttext[], int row, Rectangle content, bool percentage_mode) {
-    char label[128];
+void UiSlider(UiSliderState *state, float *val, float min, float max, const char* text, const char* righttext, int row, Rectangle content, bool percentage_mode) {
     if(percentage_mode) {
-        snprintf(label, sizeof(label),"%s = %.2f%%", text, (*val) * 100);
+        snprintf(state->label, sizeof(state->label),"%s = %.2f%%", text, (*val) * 100.0f);
     }
     if(!percentage_mode) {
-        snprintf(label, sizeof(label),"%s = %.2f", text, (*val));
+        snprintf(state->label, sizeof(state->label),"%s = %.2f", text, (*val));
     }
-    char right_label[128] = "";
     if(righttext != NULL) {
-        snprintf(right_label, sizeof(right_label),"%s ", righttext);
+        snprintf(state->right_label, sizeof(state->right_label),"%s ", righttext);
+    } else {
+        state->right_label[0] = '\0';
     }
 
     float y = content.y + row * 60;
     
-    GuiLabel((Rectangle){content.x, y, 300, 20}, label);
-    GuiSlider((Rectangle){content.x, y + 25, content.width, 20}, right_label, NULL, val, min, max);
+    GuiLabel((Rectangle){content.x, y, 300, 20}, state->label);
+    GuiSlider((Rectangle){content.x, y + 25, content.width, 20}, state->right_label, NULL, val, min, max);
 
 }
 

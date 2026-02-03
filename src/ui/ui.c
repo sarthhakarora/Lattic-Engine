@@ -42,8 +42,8 @@ bool check_validation_text(const char *s, size_t max_len)
 }
 
 void ui(World *world){
-    styling();
-
+    // ui
+    styling(); //for now
     Rectangle window = {
         GetScreenWidth() - 300,
         0, 
@@ -73,20 +73,35 @@ void ui(World *world){
         if (GuiButton((Rectangle){content.x, content.y, content.width, 30}, "Global Settings")) {
             currentPanel = PANEL_GLOBAL;
         }
-        if (GuiButton((Rectangle){content.x, content.y, content.width, 30}, "Global Settings")) {
-            currentPanel = PANEL_GLOBAL;
-        }
 
         float y = content.y + 40;
         for (int i = 0; i < world->planet_count; i++) {
-            if (GuiButton((Rectangle){content.x, y, content.width, 30}, world->planets[i].name)) {
-                currentPanel = PANEL_PLANET; selectedPlanet = i; } y += 35; } if(currentPanel == PANEL_GLOBAL) { createMode = false; UiSlider(&world->gravity_strength, 30.0f, 100.0f, "Gravity", NULL, 3, content, false); UiSlider(&world->deltaTime, 0.0f, 2.0f, "Time Speed", NULL, 4, content, true); if(GuiButton((Rectangle){content.x, content.y + 5 * 60, content.width, 20}, "Create Planet")) { currentPanel = PANEL_CREATE; } } if(currentPanel == PANEL_CREATE) { createMode = true; // Name and Texture path
+            if (GuiButton((Rectangle){content.x, y, content.width, 30}, world->planets[i]->name)) {
+                currentPanel = PANEL_PLANET; selectedPlanet = i; 
+
+            } 
+            y += 35; 
+            } 
+            if(currentPanel == PANEL_GLOBAL) { 
+                createMode = false;
+                static UiSliderState gravity = {0};
+                static UiSliderState time = {0};
+
+                UiSlider(&gravity, &world->gravity_strength, 30.0f, 100.0f, "Gravity", NULL, 3, content, false);
+                UiSlider(&time, &world->deltaTime, 0.0f, 2.0f, "Time Speed", NULL, 4, content, true); 
+
+                if(GuiButton((Rectangle){content.x, content.y + 5 * 60, content.width, 20}, "Create Planet")) { 
+                    currentPanel = PANEL_CREATE; 
+                } 
+            } 
+            if(currentPanel == PANEL_CREATE) { 
+                createMode = true; // Name and Texture path
             static unsigned char name[255] = "";
             static unsigned char texturepath[1024] = "";
 
             // Properties
-            static unsigned int rings = 0;
-            static unsigned int slices = 0;
+            static int rings = 0;
+            static int slices = 0;
             static float mass = 0;
             static float radius = 0;
             static bool has_gravity = false;
@@ -107,7 +122,7 @@ void ui(World *world){
 
             // Name
             if(UiTextInput(content, name, 255)) {
-                check_validation_text(name, 255 - 1);
+                if(!check_validation_text(name, 255 - 1)) return;
                 printf("---------------------\ninput given -> %s\n---------------------", name);
             }
             
@@ -124,45 +139,38 @@ void ui(World *world){
             UiIntInput(&slices, &slices_ui, content, 5, 1, 256);
 
             // Radius
-            UiFloatInput(&radius, &radius_ui, content, 6, -1000, 1000);
+            UiFloatInput(&radius, &radius_ui, content, 6, 1, 1000);
 
             // Mass
-            UiFloatInput(&mass, &mass_ui, content, 7, -1000, 1000);
+            UiFloatInput(&mass, &mass_ui, content, 7, 1, 1000);
 
             if(IsKeyPressed(KEY_G)) {
-                Planet buffer = planet_create(name, texturepath, radius, (Vector3){x, y, z}, rings, slices, mass, has_gravity);
+                Planet *buffer = malloc(sizeof(Planet));
+                if(!buffer) {
+                    platform_throw_error("Out Of Memory", "Memory error", PLATFORM_SYSTEM_MODAL|PLATFORM_MSG_OK);
+                }
+                *buffer = planet_create(name, texturepath, radius, (Vector3){x, y, z}, rings, slices, mass, has_gravity);
 
              
                 if(!world_add_planet(buffer, world)) {
                     platform_throw_error("Ran out of memory while trying to make planet", "Memory error", PLATFORM_SYSTEM_MODAL|PLATFORM_MSG_OK);
+                    return;
                 }
             }
           
         }
 
-
-        world->count_g = 0;
-        world->count_ng = 0;
-
-        for (int i = 0; i < world->planet_count; i++) {
-            planet_update(&world->planets[i]); // This is visual only
-            if(world->planets[i].has_gravity == true) {
-                world->gravity_planet_indexs[world->count_g++] = i;
-            }
-
-            if(world->planets[i].has_gravity == false) {
-                world->non_gravity_planet_indexs[world->count_ng++] = i;
-            }
-        }
-
         if(currentPanel == PANEL_PLANET && selectedPlanet != -1) {
-            Planet *p = &world->planets[selectedPlanet];
+            Planet *p = world->planets[selectedPlanet];
             createMode = false;
 
             float last_radius = p->radius;
 
-            UiSlider(&p->mass, 0.0f, 10000.0f, p->name, "mass", 3, content, false);
-            UiSlider(&p->radius, 0.0f, 1000.0f, p->name, "radius", 4, content, false);
+            static UiSliderState planet_mass = {0};
+            static UiSliderState planet_radius = {0};
+
+            UiSlider(&planet_mass, &p->mass, 0.0f, 10000.0f, p->name, "mass", 3, content, false);
+            UiSlider(&planet_radius, &p->radius, 0.0f, 1000.0f, p->name, "radius", 4, content, false);
 
             if(last_radius != p->radius) {
                 remake_model(p);

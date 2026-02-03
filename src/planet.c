@@ -4,60 +4,66 @@
 #include "string.h"
 #include <stdio.h>
 #include "raylib.h"
+#include "assetmanager.h"
 
 Planet planet_create(char* name, char* texture_path, float radius, Vector3 position, int rings, int slices, int mass, bool has_gravity) 
 {
-    Image img = LoadImage(texture_path);
+    ManagedTexture *tex = asset_get_texture(texture_path);
+
     Planet planet = {
         .name = strdup(name),
-        .texture = LoadTextureFromImage(img),
         .texture_path = strdup(texture_path),
+        .texture = tex,
         .radius = radius,
         .position = position,
         .rings = rings,
         .slices = slices,
         .mass = mass,
         .has_gravity = has_gravity,
-        .perpendicular_direction = (Vector3){0.0f, 0.0f, 0.0f},
-        .acceleration = (Vector3){0.0f, 0.0f, 0.0f},
-        .velocity = {0.0f, 0.0f, 0.0f},
+        .perpendicular_direction = (Vector3){0},
+        .acceleration = (Vector3){0},
+        .velocity = (Vector3){0},
     };
 
-
-    UnloadImage(img);
-    SetTextureWrap(planet.texture, TEXTURE_WRAP_CLAMP);
-    SetTextureFilter(planet.texture, TEXTURE_FILTER_TRILINEAR);
-    
+    if (planet.rings < 3) planet.rings = 3;
+    if (planet.slices < 3) planet.slices = 3;
+    if (planet.radius <= 0.01f) planet.radius = 0.01f;
+   
     Mesh mesh = GenMeshSphere(planet.radius, planet.rings, planet.slices);
-
     planet.model = LoadModelFromMesh(mesh); 
-    planet.model.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = planet.texture;
+
+    if(planet.model.materialCount > 0) {
+        planet.model.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = planet.texture->texture;
+    }
     planet.model.transform = MatrixRotateY(PI);
 
     return planet;
 }
 
 void remake_model(Planet *planet) {
-    UnloadModel(planet->model);
-    UnloadTexture(planet->texture);
-
-    Image img = LoadImage(planet->texture_path);
-    planet->texture = LoadTextureFromImage(img);
-    UnloadImage(img);
-
-    SetTextureWrap(planet->texture, TEXTURE_WRAP_CLAMP);
-    SetTextureFilter(planet->texture, TEXTURE_FILTER_TRILINEAR);
+    if(planet->model.meshCount > 0) {
+        UnloadModel(planet->model);
+    }
     
     Mesh mesh = GenMeshSphere(planet->radius, planet->rings, planet->slices);
     planet->model = LoadModelFromMesh(mesh);
 
-    planet->model.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = planet->texture;
+    if (planet->rings < 3) planet->rings = 3;
+    if (planet->slices < 3) planet->slices = 3;
+    if (planet->radius <= 0.01f) planet->radius = 0.01f;
+
+    if(planet->model.materialCount > 0) {
+        planet->model.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = planet->texture->texture;
+    }
     planet->model.transform = MatrixRotateY(PI);
 
 }
 
 void planet_draw(Planet *planet)
 {
+    if(planet->model.meshCount == 0) {
+        return;
+    }
     DrawModel(planet->model, planet->position, 1.0f, WHITE);
 }
 
@@ -71,11 +77,12 @@ void planet_update(Planet *planet)
 
 void planet_destroy(Planet *planet) {
     UnloadModel(planet->model);
-    UnloadTexture(planet->texture);
+    asset_release_texture(planet->texture_path);
 
     free(planet->name);
     free(planet->texture_path);
 
     planet->name = NULL;
     planet->texture_path = NULL;
+    planet->texture = NULL;
 }

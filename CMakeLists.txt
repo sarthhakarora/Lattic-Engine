@@ -13,6 +13,7 @@ add_executable(orbitalPhysics
     src/camera.c
     src/planet.c
     src/world.c
+    src/assetmanager.c
     src/ui/ui.c
     src/ui/ui_widgets.c
     src/platform/platform_win32.c

@@ -12,6 +12,10 @@ typedef struct {
     const int screenHeight;   
     bool core_active;
 
+    float bootTime;
+    float bootStart;
+    bool isFirstFrame;
+
     Cam camera;
     World active_world;
     
