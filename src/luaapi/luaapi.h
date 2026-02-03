@@ -7,6 +7,6 @@
 #include <lauxlib.h>
 #include <lualib.h>
 
-void init_luaapi(void);
+void init_luaapi(const char *scriptPath);
 int l_create_world(lua_State *L);
 int l_world_add_planet(lua_State *L);

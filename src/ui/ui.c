@@ -88,7 +88,7 @@ void ui(World *world){
                 static UiSliderState time = {0};
 
                 UiSlider(&gravity, &world->gravity_strength, 30.0f, 100.0f, "Gravity", NULL, 3, content, false);
-                UiSlider(&time, &world->deltaTime, 0.0f, 2.0f, "Time Speed", NULL, 4, content, true); 
+                UiSlider(&time, &world->timeScale, 0.0f, 2.0f, "Time Speed", NULL, 4, content, true); 
 
                 if(GuiButton((Rectangle){content.x, content.y + 5 * 60, content.width, 20}, "Create Planet")) { 
                     currentPanel = PANEL_CREATE; 

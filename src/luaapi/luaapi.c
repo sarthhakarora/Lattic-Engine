@@ -11,7 +11,7 @@
 
 extern Core *global_core;
 
-void init_luaapi(void)
+void init_luaapi(const char *scriptPath)
 {
     static lua_State *L;
 
@@ -21,7 +21,7 @@ void init_luaapi(void)
     lua_register(L, "create_world", l_create_world);
     lua_register(L, "add_planet", l_world_add_planet);
 
-    if(luaL_dofile(L, "../scripts/main.lua")) {
+    if(luaL_dofile(L, scriptPath)) {
         platform_throw_error("Script is not loaded check file paths", "Script not loaded", PLATFORM_SYSTEM_MODAL || PLATFORM_MSG_OK);
         const char *err = lua_tostring(L, -1);
         printf("LUA ERROR: %s\n", err);

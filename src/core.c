@@ -4,6 +4,7 @@
 #include "platform/platform_win32.h"
 
 #include "core.h"
+#include "app.h"
 #include "planet.h"
 #include "world.h"
 #include "camera.h"
@@ -31,7 +32,8 @@ Core core_create(CoreArgs args) {
     Core core = {
         .screenWidth = 1080,
         .screenHeight = 720,
-        .core_active = true,
+        .program_active = true,
+        .core_active = false,
 
         .bootTime = 0.0f,
         .bootStart = 0.0f,
@@ -53,8 +55,6 @@ Core core_create(CoreArgs args) {
 
     core.bootStart = GetTime();
 
-    SetTargetFPS(60);
-    DisableCursor();
 
     core.camera = create_camera();
 
@@ -78,18 +78,34 @@ Core core_create(CoreArgs args) {
     return core;
 }
 
-static void enable_cursor(Cam *camera) {
-    if (IsKeyPressed(KEY_ENTER)) {
+void enable_cursor(Core *core) {
+    static CursorMode last = -1;
+
+    if (core->cursor_mode == last) return;
+
+    if (core->cursor_mode == CURSOR_UI) {
         EnableCursor();
-        camera->rotate_active = false;
-    } 
-    else if (IsKeyPressed(KEY_RIGHT_SHIFT)) {
+        core->camera.rotate_active = false;
+    } else {
         DisableCursor();
-        camera->rotate_active = true;
+        core->camera.rotate_active = true;
+    }
+
+    last = core->cursor_mode;
+}
+
+static void handle_cursor_input(Core *core)
+{
+    if (IsKeyPressed(KEY_ENTER)) {
+        core->cursor_mode = CURSOR_UI;
+    }
+
+    if (IsKeyPressed(KEY_RIGHT_SHIFT)) {
+        core->cursor_mode = CURSOR_CAMERA;
     }
 }
 
-static void fullscreen() {
+void fullscreen() {
     if(IsKeyPressed(KEY_F11) && IsWindowFullscreen() == false) {
         SetWindowMinSize(GetMonitorWidth(0), GetMonitorHeight(0));
         SetWindowState(FLAG_FULLSCREEN_MODE);
@@ -99,7 +115,7 @@ static void fullscreen() {
     }
 }
 
-static void pause_time(World *world) {
+void pause_time(World *world) {
     static float old_deltaTime = 0.0f;
     if(IsKeyPressed(KEY_P) && world->deltaTime != 0) {
         old_deltaTime = world->deltaTime;
@@ -110,23 +126,18 @@ static void pause_time(World *world) {
     }
 }
 
-static void core_draw(Core *core) {
+void core_draw(Core *core) {
     BeginDrawing();
     BeginMode3D(core->camera.camera);
     ClearBackground(BLACK);
 
-
     if(core->active_world.valid) {
-        DrawGrid(1000, 2.0f);
         world_draw(&core->active_world);
     }
 
     EndMode3D();
 
-    DrawFPS(10, 10);
-
-    if(core->active_world.valid) {
-        ui(&core->active_world);
+    DrawFPS(10, 10); if(core->active_world.valid) { ui(&core->active_world);
     }
 
     EndDrawing();
@@ -138,7 +149,9 @@ static void core_update(Core *core)
         core->core_active = false;
     }
 
-    enable_cursor(&core->camera);
+    handle_cursor_input(core);
+    enable_cursor(core);
+
     fullscreen();
 
     if(core->active_world.valid) {
@@ -148,15 +161,18 @@ static void core_update(Core *core)
     update_camera(&core->camera);
 }
 void core_run(Core *core) {
-    while (core->core_active == true && !WindowShouldClose())
-    {
-        core_update(core);
-        core_draw(core);
+    while (core->program_active == true && !WindowShouldClose()) {
+        if(core->core_active){
+            core_update(core);
+            core_draw(core);
 
-        if(core->isFirstFrame) {
-            double now = GetTime();
-            printf("--------------------------------\nBOOT: %.3fms taken to boot\n--------------------------------\n", (now - core->bootTime) * 1000);
-            core->isFirstFrame = false;
+            if(core->isFirstFrame) {
+                double now = GetTime();
+                printf("--------------------------------\nBOOT: %.3fms taken to boot\n--------------------------------\n", (now - core->bootTime) * 1000);
+                core->isFirstFrame = false;
+            }
+        } else {
+            app_run(core, &core->core_active);
         }
     }
     

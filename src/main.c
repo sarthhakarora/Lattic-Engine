@@ -2,6 +2,7 @@
 #include "raylib.h"
 #include "luaapi/luaapi.h"
 #include "core.h"
+#include "app.h"
 
 Core *global_core = NULL;
 
@@ -11,8 +12,6 @@ int main(int argc, char **argv) {
     Core core = core_create(args);
 
     global_core = &core;
-
-    init_luaapi();
 
     core_run(&core);
     core_destroy(&core);

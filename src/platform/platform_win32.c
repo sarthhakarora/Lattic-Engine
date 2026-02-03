@@ -1,7 +1,7 @@
 #define WIN32_LEAN_AND_MEAN
 #define NOMINMAX
 
-#include "Windows.h"
+#include <windows.h>
 #include "commdlg.h"
 
 #include "stdio.h"
@@ -50,4 +50,31 @@ void platform_throw_error(char *message, char *title, PlatformMessageType msg_ty
         platform_message_flags(msg_type)
     );
     exit(EXIT_FAILURE);
+}
+
+ScriptList scan_scripts(const char *directory)
+{
+    ScriptList list = {0};
+
+    char search_path[MAX_PATH];
+    snprintf(search_path, sizeof(search_path), "%s\\*.lua", directory);
+
+    WIN32_FIND_DATAA data;
+    HANDLE hFind = FindFirstFileA(search_path, &data);
+    if (hFind == INVALID_HANDLE_VALUE) {
+        return list;
+    }
+
+    do {
+        list.paths = realloc(list.paths, sizeof(char*) * (list.count + 1));
+
+        char fullpath[MAX_PATH];
+        snprintf(fullpath, sizeof(fullpath), "%s\\%s", directory, data.cFileName);
+
+        list.paths[list.count] = _strdup(fullpath);
+        list.count++;
+    } while (FindNextFileA(hFind, &data));
+
+    FindClose(hFind);
+    return list;
 }

@@ -3,6 +3,7 @@
 #include "stdio.h"
 #include "stdbool.h"
 #include "stddef.h"
+#include "../scriptdb.h"
 
 typedef enum {
     PLATFORM_MSG_OK,
@@ -21,3 +22,4 @@ typedef enum {
 
 bool platfrom_open_file(char *out_path, size_t max_len);
 void platform_throw_error(char *message, char *title, PlatformMessageType msg_type);
+ScriptList scan_scripts(const char *directory);

@@ -9,6 +9,7 @@ typedef struct {
     float sensitivity;
     Vector3 forward;
     float velocity;
+    float deltaTime;
     bool rotate_active;
 
 } Cam;

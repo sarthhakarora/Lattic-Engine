@@ -59,7 +59,10 @@ World world_create()
         .planet_count = 0,
         .planet_capacity = 8,
         .gravity_strength = 50.0f,
-        .deltaTime = 0.1f,
+        .deltaTime = 0.0f,
+        .timeScale = 1.0f,
+        .gravity_planet_indexs = malloc(sizeof(int) * world.planet_capacity),
+        .non_gravity_planet_indexs = malloc(sizeof(int) * world.planet_capacity),
     };
 
     return world;
@@ -71,14 +74,20 @@ bool world_add_planet(Planet *planet, World *world)
 
     if(world->planet_count >= world->planet_capacity) {
         int new_cap = world->planet_capacity * 2;
-        Planet **new_planets = realloc(
-            world->planets,
-            new_cap * sizeof(Planet*)
-        );
 
+        Planet **new_planets = realloc(world->planets, new_cap * sizeof(Planet*));
         if(!new_planets) return false;
-         
+
+        int *new_g = realloc(world->gravity_planet_indexs, sizeof(int) * new_cap);
+        if (!new_g) return false;
+
+        int *new_ng = realloc( world->non_gravity_planet_indexs, sizeof(int) * new_cap);
+        if (!new_ng) return false;
+
         world->planets = new_planets;
+        world->planet_capacity = new_cap;
+        world->gravity_planet_indexs = new_g;
+        world->non_gravity_planet_indexs = new_ng;
         world->planet_capacity = new_cap;
     }
 
@@ -99,6 +108,9 @@ void world_update(World *world)
 {
     Vector3 direction;
     float distance;
+    static float old_timeScale = 0.0f;
+    world->deltaTime = GetFrameTime() * world->timeScale;
+
     world->count_g = 0;
     world->count_ng = 0;
 
@@ -141,6 +153,8 @@ void world_update(World *world)
         world->planets[p]->position = Vector3Add(world->planets[p]->position, Vector3Add(Vector3Scale(world->planets[p]->velocity, world->deltaTime), Vector3Scale(old_acceleration, (0.5f * world->deltaTime * world->deltaTime))));
         world->planets[p]->velocity = Vector3Add(world->planets[p]->velocity, Vector3Scale(Vector3Add(old_acceleration, world->planets[p]->acceleration), world->deltaTime * 0.5f));
     }
+
+    old_timeScale = world->deltaTime;
 }
 
 void world_destroy(World *world) {

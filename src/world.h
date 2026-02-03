@@ -10,11 +10,12 @@ typedef struct {
     int planet_count;
     unsigned int planet_capacity;
     float gravity_strength;
-    int gravity_planet_indexs[100];
-    int non_gravity_planet_indexs[100];
+    int *gravity_planet_indexs;
+    int *non_gravity_planet_indexs;
     int count_g;
     int count_ng;
     float deltaTime;
+    float timeScale;
 } World;
 
 World world_create();
