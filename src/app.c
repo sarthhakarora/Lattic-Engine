@@ -50,7 +50,7 @@ static void main_menu(Core *core, bool *program_active, int *choice, char *choic
 
     if(GuiButton((Rectangle){GetScreenWidth()/2 - 200, GetScreenHeight()/2 * 1.0f, 400, tilesize.y}, "Start Engine")) {
         if (*choice < 0 || *choice >= scripts->count) {
-            platform_throw_error_without_exit("Invalid selection", "User Error", PLATFORM_ICON_WARNING || PLATFORM_MSG_OK);
+            platform_throw_error_without_exit("Invalid selection", "User Error", PLATFORM_ICON_WARNING | PLATFORM_MSG_OK);
             return;
         }
 
@@ -116,10 +116,16 @@ static void draw_app(Core *core, bool *core_active, int *choice, char *choiceTex
 
 void app_run(Core *core, bool *program_active)
 {
+    core->cursor_mode = CURSOR_UI;
+    handle_cursor_input(core);
+    enable_cursor(core);
+
     styling();
+    /*
     if (IsKeyPressed(KEY_ESCAPE)) {
         core->program_active = false;
     }
+    */
 
     static int appstate = APP_STATE_MENU;
 
@@ -148,7 +154,7 @@ void app_run(Core *core, bool *program_active)
         for(int i = 0; i < scripts.count; i++) {
            strncat(choiceText, scripts.paths[i], sizeof(choiceText) - strlen(choiceText) - 1);
            if(i < scripts.count - 1) {
-                strcat(choiceText, ";");
+                strncat(choiceText, ";", sizeof(choiceText) - strlen(choiceText) - 1 );
             }
         }
         built = true;

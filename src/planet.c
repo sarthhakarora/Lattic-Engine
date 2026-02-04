@@ -76,11 +76,13 @@ void planet_update(Planet *planet)
 }
 
 void planet_destroy(Planet *planet) {
+    if(!planet) {
+        return;
+    }
     UnloadModel(planet->model);
     asset_release_texture(planet->texture_path);
 
     free(planet->name);
-    free(planet->texture_path);
 
     planet->name = NULL;
     planet->texture_path = NULL;

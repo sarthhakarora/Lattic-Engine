@@ -37,6 +37,7 @@ void enable_cursor(Core *core);
 void fullscreen();
 void pause_time(World *world);
 void core_draw(Core *core);
+void handle_cursor_input(Core *core);
 
 Core core_create(CoreArgs args);
 CoreArgs core_parce_args(int argc, char **argv);

@@ -14,7 +14,7 @@ ManagedTexture *asset_get_texture(const char *path)
 
     if(!entry) {
         entry = malloc(sizeof(TextureEntry));
-        entry->key = path;
+        entry->key = strdup(path);
         entry->managed.texture = LoadTexture(path); 
         entry->managed.refCount = 1;
         entry->managed.loaded = true;
@@ -33,6 +33,10 @@ void asset_release_texture(const char *path)
     HASH_FIND_STR(texture_map, path, entry);
 
     if (!entry) {
+        return;
+    }
+
+    if(entry->managed.refCount <= 0) {
         return;
     }
 

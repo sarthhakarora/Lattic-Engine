@@ -158,9 +158,20 @@ void world_update(World *world)
 }
 
 void world_destroy(World *world) {
-    for(int i = 0; i < world->planet_count; i++) {
-        planet_destroy(world->planets[i]);
+    if(!world || !world->valid) {
+        return;
     }
+
+    if(world->valid) {
+        for(int i = 0; i < world->planet_count; i++) {
+            planet_destroy(world->planets[i]);
+            free(world->planets[i]);
+            world->planets[i] = NULL;
+        }
+    }
+
     free(world->planets);
     world->planets = NULL;
+    world->planet_count = 0;
+    world->valid = false;
 }

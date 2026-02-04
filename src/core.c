@@ -54,9 +54,9 @@ Core core_create(CoreArgs args) {
     InitWindow(core.screenWidth, core.screenHeight, "Orbital Physics Simulator");
 
     core.bootStart = GetTime();
-
-
     core.camera = create_camera();
+
+    SetExitKey(KEY_NULL);
 
     /*
     Planet earth = planet_create("earth", "assets/graphics/earth.jpg", 10.0f, (Vector3){200.0f, 0.0f, 0.0f}, 32, 32, 1, false);
@@ -94,7 +94,7 @@ void enable_cursor(Core *core) {
     last = core->cursor_mode;
 }
 
-static void handle_cursor_input(Core *core)
+void handle_cursor_input(Core *core)
 {
     if (IsKeyPressed(KEY_ENTER)) {
         core->cursor_mode = CURSOR_UI;
