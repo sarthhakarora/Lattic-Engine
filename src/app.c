@@ -48,7 +48,7 @@ static void main_menu(Core *core, bool *program_active, int *choice, char *choic
         (Color){100, 100, 100, 255}
     );
 
-    if(GuiButton((Rectangle){GetScreenWidth()/2 - 200, GetScreenHeight()/2 * 1.0f, 400, tilesize.y}, "Start Engine")) {
+    if(GuiButton((Rectangle){GetScreenWidth()/2 - 200, GetScreenHeight()/2 * 1.0f, 400, tilesize.y}, "Start Engine") && !editMode) {
         if (*choice < 0 || *choice >= scripts->count) {
             platform_throw_error_without_exit("Invalid selection", "User Error", PLATFORM_ICON_WARNING | PLATFORM_MSG_OK);
             return;
@@ -59,7 +59,7 @@ static void main_menu(Core *core, bool *program_active, int *choice, char *choic
         core->cursor_mode = CURSOR_CAMERA;
         *program_active = true;
     }
-    if(GuiButton((Rectangle){GetScreenWidth()/2 - 200, GetScreenHeight()/2 * 1.2f, 400, tilesize.y}, "Settings")) {
+    if(GuiButton((Rectangle){GetScreenWidth()/2 - 200, GetScreenHeight()/2 * 1.2f, 400, tilesize.y}, "Settings") && !editMode) {
         *appstate = APP_STATE_SETTINGS;
 
     }
