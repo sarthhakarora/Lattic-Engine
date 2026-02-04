@@ -52,6 +52,14 @@ void platform_throw_error(char *message, char *title, PlatformMessageType msg_ty
     exit(EXIT_FAILURE);
 }
 
+void platform_throw_error_without_exit(char *message, char *title, PlatformMessageType msg_type) {
+    MessageBoxA(
+        NULL,
+        message,
+        title,
+        platform_message_flags(msg_type)
+    );
+}
 ScriptList scan_scripts(const char *directory)
 {
     ScriptList list = {0};

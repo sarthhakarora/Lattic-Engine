@@ -137,7 +137,12 @@ void core_draw(Core *core) {
 
     EndMode3D();
 
-    DrawFPS(10, 10); if(core->active_world.valid) { ui(&core->active_world);
+    DrawFPS(10, 10); 
+    if(core->active_world.valid) { 
+        ui(&core->active_world);
+        static char buffer[256];
+        snprintf(buffer, 256, "Planet Count: %d", core->active_world.planet_count);
+        DrawText(buffer, 10, 30, 20, GREEN);
     }
 
     EndDrawing();
@@ -147,6 +152,12 @@ static void core_update(Core *core)
 {
     if (IsKeyPressed(KEY_ESCAPE)) {
         core->core_active = false;
+        if(core->active_world.valid) {
+            world_destroy(&core->active_world);
+            core->active_world = (World){0};
+            core->active_world.valid = false;
+        }
+        return;
     }
 
     handle_cursor_input(core);
@@ -166,20 +177,22 @@ void core_run(Core *core) {
             core_update(core);
             core_draw(core);
 
+        } if(!core->core_active) {
+            app_run(core, &core->core_active);
             if(core->isFirstFrame) {
                 double now = GetTime();
                 printf("--------------------------------\nBOOT: %.3fms taken to boot\n--------------------------------\n", (now - core->bootTime) * 1000);
                 core->isFirstFrame = false;
             }
-        } else {
-            app_run(core, &core->core_active);
         }
     }
-    
-}
-void core_destroy(Core *core) {
-    CloseWindow();
     if(core->active_world.valid) {
         world_destroy(&core->active_world);
     }
+}
+void core_destroy(Core *core) {
+    if(core->active_world.valid) {
+        world_destroy(&core->active_world);
+    }
+    CloseWindow();
 }
