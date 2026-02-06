@@ -18,9 +18,14 @@ Camera2D camera = {
     .zoom = 1.0f,
 };
 
-static void main_menu(Core *core, bool *program_active, int *choice, char *choiceText, ScriptList *scripts, bool *editMode, int *appstate) {
+static void main_menu(Core *core, bool *program_active, int *choice, char *choiceText, ScriptList *scripts, bool *dropDownOpen, int *appstate) {
     const char* title = "Lettic engine";
     const char* subtitle = "v1 Orbital Physics Simulator - By Sarthhak";
+
+    static LoadTracker loader = {
+        .total = 0,
+        .done = 0
+    };
 
     Font font = GetFontDefault();
 
@@ -48,7 +53,37 @@ static void main_menu(Core *core, bool *program_active, int *choice, char *choic
         (Color){100, 100, 100, 255}
     );
 
-    if(GuiButton((Rectangle){GetScreenWidth()/2 - 200, GetScreenHeight()/2 * 1.0f, 400, tilesize.y}, "Start Engine") && !editMode) {
+    Rectangle dropDownRec = (Rectangle){
+        GetScreenWidth()/2 - 200, 
+        GetScreenHeight()/2 * 0.8f, 
+        400, 
+        tilesize.y
+    };
+
+    Vector2 mousepos = GetMousePosition();
+
+    bool mouseOverDropdown = CheckCollisionPointRec(mousepos, dropDownRec) || *dropDownOpen;
+
+    static bool dropDownPressed;
+    static bool settingsButtonPressed;
+    static bool startButtonPressed;
+
+    static float x = 0.0f;
+    float y = 0.0f;
+    float z = 30.0f;
+
+    x+= 0.0001f;
+
+    GuiProgressBar((Rectangle){GetScreenWidth()/2 - 200, GetScreenHeight()/2 * 1.0f, 400, tilesize.y}, NULL, NULL, &x, y, z);
+    startButtonPressed = GuiButton((Rectangle){GetScreenWidth()/2 - 200, GetScreenHeight()/2 * 1.2f, 400, tilesize.y}, "Start Engine");
+    settingsButtonPressed = GuiButton((Rectangle){GetScreenWidth()/2 - 200, GetScreenHeight()/2 * 1.4f, 400, tilesize.y}, "Settings");
+    dropDownPressed = GuiDropdownBox(dropDownRec, choiceText, choice, *dropDownOpen);
+
+    if(dropDownPressed) {
+        *dropDownOpen = !*dropDownOpen;
+    }
+
+    if(!mouseOverDropdown && startButtonPressed) {
         if (*choice < 0 || *choice >= scripts->count) {
             platform_throw_error_without_exit("Invalid selection", "User Error", PLATFORM_ICON_WARNING | PLATFORM_MSG_OK);
             return;
@@ -58,16 +93,17 @@ static void main_menu(Core *core, bool *program_active, int *choice, char *choic
 
         core->cursor_mode = CURSOR_CAMERA;
         *program_active = true;
+
+        if(core->active_world.valid) {
+            loader.total += core->active_world.planet_count;
+        }
     }
-    if(GuiButton((Rectangle){GetScreenWidth()/2 - 200, GetScreenHeight()/2 * 1.2f, 400, tilesize.y}, "Settings") && !editMode) {
+
+    if(!mouseOverDropdown && settingsButtonPressed) {
         *appstate = APP_STATE_SETTINGS;
 
     }
-
-    if(GuiDropdownBox((Rectangle){GetScreenWidth()/2 - 200, GetScreenHeight()/2 * 0.8f, 400, tilesize.y}, choiceText, choice, *editMode)) {
-        *editMode = !*editMode;
-    }
-
+    
 }
 
 static void settings_menu(Core *core, bool *core_active, int *choice, char *choiceText, ScriptList *scripts, bool *editMode, int *appstate) {
@@ -147,7 +183,7 @@ void app_run(Core *core, bool *program_active)
     static int choice = -1;
     static char choiceText[4069]; 
     static bool built = false;
-    static bool editMode = false;
+    static bool dropDownOpen = false;
 
     if(!built) {
         choiceText[0] = '\0';
@@ -160,5 +196,5 @@ void app_run(Core *core, bool *program_active)
         built = true;
     }
 
-    draw_app(core, program_active, &choice, choiceText, &scripts, &editMode, &appstate);
+    draw_app(core, program_active, &choice, choiceText, &scripts, &dropDownOpen, &appstate);
 }
