@@ -38,7 +38,7 @@ if (WIN32)
 endif()
 
 add_custom_target(run
-    COMMAND orbitalPhysics
+    COMMAND $<TARGET_FILE:orbitalPhysics>
     DEPENDS orbitalPhysics
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
 )
