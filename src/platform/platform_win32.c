@@ -7,6 +7,7 @@
 #include "stdio.h"
 #include "stdbool.h"
 #include "stddef.h"
+#include "string.h"
 
 #include "platform_win32.h"
 
@@ -79,7 +80,7 @@ ScriptList scan_scripts(const char *directory)
         char fullpath[MAX_PATH];
         snprintf(fullpath, sizeof(fullpath), "%s\\%s", directory, data.cFileName);
 
-        list.paths[list.count] = _strdup(fullpath);
+        list.paths[list.count] = strdup(fullpath);
         list.count++;
     } while (FindNextFileA(hFind, &data));
 
