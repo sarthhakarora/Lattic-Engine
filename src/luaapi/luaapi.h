@@ -3,7 +3,7 @@
 // Personal C → Lua Orbital / N-Body Engine
 // ============================================================
 //
-// RULES:
+//   RULES:
 // - Do NOT add Tier N+1 before Tier N is solid
 // - No generic setters, no tables-for-everything
 // - Explicit > flexible
@@ -134,6 +134,9 @@
 // engine.get_fps() -> number
 // engine.get_step_time() -> number
 //
+// register_texture(name, path)
+// engine.preload_assets()
+// engine.are_assets_loaded() -> bool (optional)
 // ============================================================
 // END OF LUA API TODO
 // ============================================================
@@ -150,3 +153,8 @@
 void init_luaapi(const char *scriptPath);
 int l_create_world(lua_State *L);
 int l_world_add_planet(lua_State *L);
+int l_pause(lua_State *L);
+int l_resume(lua_State *L);
+int l_IsKeyPressed(lua_State *L);
+int l_IsKeyDown(lua_State *L);
+int l_IsKeyUp(lua_State *L);

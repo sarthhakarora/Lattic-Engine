@@ -16,6 +16,8 @@ typedef struct {
     int count_ng;
     float deltaTime;
     float timeScale;
+    float savedTimeScale;
+    bool isPaused;
 } World;
 
 World world_create();

@@ -61,6 +61,8 @@ World world_create()
         .gravity_strength = 50.0f,
         .deltaTime = 0.0f,
         .timeScale = 1.0f,
+        .savedTimeScale = 1.0f,
+        .isPaused = false,
         .gravity_planet_indexs = malloc(sizeof(int) * world.planet_capacity),
         .non_gravity_planet_indexs = malloc(sizeof(int) * world.planet_capacity),
     };

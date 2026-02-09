@@ -3,13 +3,28 @@
 #include "../planet.h"
 #include "../world.h"
 #include "../platform/platform_win32.h"
+
 #include <lua.h>
 #include <lauxlib.h>
 #include <lualib.h>
 
 #include "../core.h"
 
+#define X(k) lua_pushinteger(L, (int)(k)); lua_setfield(L, -2, #k + 4);
+
 extern Core *global_core;
+
+static void push_keyboard_keys(lua_State *L) {
+    lua_newtable(L);
+
+    #define X(k) lua_pushinteger(L, (int)(k)); lua_setfield(L, -2, #k + 4);
+
+    #include "../generated/keyboard_keys.def"
+
+    #undef X
+
+    lua_setglobal(L, "KEY");
+}
 
 void init_luaapi(const char *scriptPath)
 {
@@ -20,6 +35,12 @@ void init_luaapi(const char *scriptPath)
 
     lua_register(L, "create_world", l_create_world);
     lua_register(L, "add_planet", l_world_add_planet);
+    lua_register(L, "pause", l_pause);
+    lua_register(L, "resume", l_resume);
+    lua_register(L, "is_key_down", l_IsKeyDown);
+    lua_register(L, "is_key_up", l_IsKeyUp);
+
+    push_keyboard_keys(L);
 
     if(luaL_dofile(L, scriptPath)) {
         platform_throw_error("Script is not loaded check file paths", "Script not loaded", PLATFORM_SYSTEM_MODAL || PLATFORM_MSG_OK);
@@ -27,6 +48,7 @@ void init_luaapi(const char *scriptPath)
         printf("LUA ERROR: %s\n", err);
         lua_pop(L, 1);
     }
+
 }
 
 int l_create_world(lua_State *L)
@@ -83,7 +105,7 @@ int l_world_add_planet(lua_State *L)
     };
     lua_pop(L, 4); 
 
-        lua_getfield(L, 1, "rings");
+    lua_getfield(L, 1, "rings");
     int rings = luaL_checkinteger(L, -1);
     lua_pop(L, 1);
 
@@ -114,4 +136,39 @@ int l_world_add_planet(lua_State *L)
     world_add_planet(p, &global_core->active_world);
 
     return 0;
+}
+
+int l_pause(lua_State *L)
+{
+    global_core->active_world.savedTimeScale = global_core->active_world.timeScale;
+    global_core->active_world.timeScale = 0.0f;
+
+    return 0;
+}
+
+int l_resume(lua_State *L)
+{
+    global_core->active_world.timeScale = global_core->active_world.savedTimeScale;
+
+    return 0;
+}
+
+int l_IsKeyDown(lua_State *L)
+{
+    KeyboardKey key = (KeyboardKey)luaL_checkinteger(L, 1);
+    bool is_pressed = IsKeyDown(key);
+
+    lua_pushboolean(L, is_pressed);
+
+    return 1;
+}
+
+int l_IsKeyUp(lua_State *L)
+{
+    KeyboardKey key = (KeyboardKey)luaL_checkinteger(L, 1);
+    bool is_pressed = IsKeyUp(key);
+
+    lua_pushboolean(L, is_pressed);
+
+    return 1;
 }

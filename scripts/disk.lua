@@ -67,3 +67,11 @@ for i = 1, disk_count do
         has_gravity = false
     }
 end
+
+if is_key_down(KEY.L) then
+    pause()
+end
+
+if is_key_up(KEY.L) then
+    resume()
+end
