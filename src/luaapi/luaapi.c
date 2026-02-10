@@ -26,19 +26,42 @@ static void push_keyboard_keys(lua_State *L) {
     lua_setglobal(L, "KEY");
 }
 
-void init_luaapi(const char *scriptPath)
+void init_lua(lua_State *L) {
+    lua_getglobal(L, "init");
+    if(!lua_isfunction(L, -1)) {
+        lua_pop(L, 1);
+        platform_throw_error("Lua script must define init", "init not found", PLATFORM_SYSTEM_MODAL || PLATFORM_MSG_OK);
+        return; 
+    }
+    if(lua_pcall(L, 0, 0, 0) != LUA_OK) {
+        printf("LUA INIT ERROR: %s\n", lua_tostring(L, -1));
+        lua_pop(L, 1);
+    }
+}
+void update_lua(lua_State *L) {
+    lua_getglobal(L, "update");
+    if(!lua_isfunction(L, -1)) {
+        lua_pop(L, 1);
+        platform_throw_error("Lua script must define update", "update not found", PLATFORM_SYSTEM_MODAL || PLATFORM_MSG_OK);
+        return;
+    }
+    if(lua_pcall(L, 0, 0, 0) != LUA_OK) {
+        printf("LUA INIT ERROR: %s\n", lua_tostring(L, -1));
+        lua_pop(L, 1);
+    }
+}
+
+void init_luaapi(const char *scriptPath, lua_State *L)
 {
-    static lua_State *L;
-
-    L = luaL_newstate();
-    luaL_openlibs(L);
-
     lua_register(L, "create_world", l_create_world);
     lua_register(L, "add_planet", l_world_add_planet);
+
     lua_register(L, "pause", l_pause);
     lua_register(L, "resume", l_resume);
+
     lua_register(L, "is_key_down", l_IsKeyDown);
     lua_register(L, "is_key_up", l_IsKeyUp);
+    lua_register(L, "is_key_pressed", l_IsKeyPressed);
 
     push_keyboard_keys(L);
 
@@ -167,6 +190,16 @@ int l_IsKeyUp(lua_State *L)
 {
     KeyboardKey key = (KeyboardKey)luaL_checkinteger(L, 1);
     bool is_pressed = IsKeyUp(key);
+
+    lua_pushboolean(L, is_pressed);
+
+    return 1;
+}
+
+int l_IsKeyPressed(lua_State *L)
+{
+    KeyboardKey key = (KeyboardKey)luaL_checkinteger(L, 1);
+    bool is_pressed = IsKeyPressed(key);
 
     lua_pushboolean(L, is_pressed);
 

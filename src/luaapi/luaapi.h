@@ -150,7 +150,10 @@
 #include <lauxlib.h>
 #include <lualib.h>
 
-void init_luaapi(const char *scriptPath);
+void init_luaapi(const char *scriptPath, lua_State *L);
+void init_lua(lua_State *L);
+void update_lua(lua_State *L);
+
 int l_create_world(lua_State *L);
 int l_world_add_planet(lua_State *L);
 int l_pause(lua_State *L);

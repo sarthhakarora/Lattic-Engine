@@ -18,7 +18,7 @@ Camera2D camera = {
     .zoom = 1.0f,
 };
 
-static void main_menu(Core *core, bool *program_active, int *choice, char *choiceText, ScriptList *scripts, bool *dropDownOpen, int *appstate) {
+static void main_menu(Core *core, int *choice, char *choiceText, ScriptList *scripts, bool *dropDownOpen, int *appstate) {
     const char* title = "Lettic engine";
     const char* subtitle = "v1 Orbital Physics Simulator - By Sarthhak";
 
@@ -89,10 +89,14 @@ static void main_menu(Core *core, bool *program_active, int *choice, char *choic
             return;
         }
 
-        init_luaapi(scripts->paths[*choice]);       
+        core->L = luaL_newstate();
+        luaL_openlibs(core->L);
+
+        init_luaapi(scripts->paths[*choice], core->L);       
+        init_lua(core->L);
 
         core->cursor_mode = CURSOR_CAMERA;
-        *program_active = true;
+        core->core_active = true;
 
         if(core->active_world.valid) {
             loader.total += core->active_world.planet_count;
@@ -106,7 +110,7 @@ static void main_menu(Core *core, bool *program_active, int *choice, char *choic
     
 }
 
-static void settings_menu(Core *core, bool *core_active, int *choice, char *choiceText, ScriptList *scripts, bool *editMode, int *appstate) {
+static void settings_menu(Core *core, int *choice, char *choiceText, ScriptList *scripts, bool *editMode, int *appstate) {
     const char* title = "Settings";
 
     Font font = GetFontDefault();
@@ -134,15 +138,15 @@ static void settings_menu(Core *core, bool *core_active, int *choice, char *choi
 
 }
 
-static void draw_app(Core *core, bool *core_active, int *choice, char *choiceText, ScriptList *scripts, bool *editMode, int *appstate) {
+static void draw_app(Core *core, int *choice, char *choiceText, ScriptList *scripts, bool *editMode, int *appstate) {
     BeginDrawing();
     BeginMode2D(camera);
     ClearBackground(BLACK);
 
     if(*appstate == APP_STATE_MENU) {
-        main_menu(core, core_active, choice, choiceText, scripts, editMode, appstate);
+        main_menu(core, choice, choiceText, scripts, editMode, appstate);
     } else if(*appstate == APP_STATE_SETTINGS) {
-        settings_menu(core, core_active, choice, choiceText, scripts, editMode, appstate);
+        settings_menu(core, choice, choiceText, scripts, editMode, appstate);
     }
 
     EndMode2D();
@@ -157,11 +161,6 @@ void app_run(Core *core, bool *program_active)
     enable_cursor(core);
 
     styling();
-    /*
-    if (IsKeyPressed(KEY_ESCAPE)) {
-        core->program_active = false;
-    }
-    */
 
     static int appstate = APP_STATE_MENU;
 
@@ -196,5 +195,6 @@ void app_run(Core *core, bool *program_active)
         built = true;
     }
 
-    draw_app(core, program_active, &choice, choiceText, &scripts, &dropDownOpen, &appstate);
+    draw_app(core, &choice, choiceText, &scripts, &dropDownOpen, &appstate);
+
 }

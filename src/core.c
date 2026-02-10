@@ -39,6 +39,8 @@ Core core_create(CoreArgs args) {
         .bootStart = 0.0f,
         .isFirstFrame = true,
 
+        .lua_initalzied = false,
+
         .camera = create_camera(),
     };
 
@@ -57,20 +59,6 @@ Core core_create(CoreArgs args) {
     core.camera = create_camera();
 
     SetExitKey(KEY_NULL);
-
-    /*
-    Planet earth = planet_create("earth", "assets/graphics/earth.jpg", 10.0f, (Vector3){200.0f, 0.0f, 0.0f}, 32, 32, 1, false);
-    Planet mars = planet_create("mars", "assets/graphics/mars.jpg", 10.0f, (Vector3){-250.0f, 0.0f, 0.0f}, 32, 32, 1, false);
-    Planet sun = planet_create("sun", "assets/graphics/sun.jpg", 30.0f, (Vector3){0.0f, 200.0f, 0.0f}, 48, 48, 1000, true);
-    Planet jupiter = planet_create("jupiter", "assets/graphics/jupiter.jpg", 30.0f, (Vector3){0.0f, 0.0f, 0.0f}, 48, 48, 1000, true);
-    */
-
-    /*
-    planets[count++] = earth;
-    planets[count++] = sun;
-    planets[count++] = jupiter;
-    planets[count++] = mars;
-    */
 
     core.active_world = (World){0};
     core.active_world.valid = false;
@@ -160,6 +148,8 @@ static void core_update(Core *core)
         return;
     }
 
+    update_lua(core->L);
+
     handle_cursor_input(core);
     enable_cursor(core);
 
@@ -169,6 +159,7 @@ static void core_update(Core *core)
         pause_time(&core->active_world);
         world_update(&core->active_world);
     }
+
     update_camera(&core->camera);
 }
 void core_run(Core *core) {

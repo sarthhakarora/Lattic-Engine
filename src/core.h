@@ -5,6 +5,7 @@
 #include "camera.h"
 #include "string.h"
 #include "world.h"
+#include "lua.h"
 #include "planet.h"
 
 typedef struct {
@@ -25,6 +26,9 @@ typedef struct {
     float bootTime;
     float bootStart;
     bool isFirstFrame;
+
+    lua_State *L;
+    bool lua_initalzied;
 
     CursorMode cursor_mode;
 
