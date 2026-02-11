@@ -3,8 +3,11 @@
 #include "string.h"
 #include "planet.h"
 #include "stdlib.h"
+#include "core.h"
 #include <stdio.h>
 #include "raymath.h"
+
+extern Core* global_core;
 
 static void initorbit(World *world) {
     if(world->planet_count == 0) {
@@ -56,6 +59,7 @@ World world_create()
     World world = {
         .valid = true,
         .planets = malloc(sizeof(Planet*) * 8),
+        .next_planet_id = 1,
         .planet_count = 0,
         .planet_capacity = 8,
         .gravity_strength = 50.0f,
@@ -66,6 +70,9 @@ World world_create()
         .gravity_planet_indexs = malloc(sizeof(int) * world.planet_capacity),
         .non_gravity_planet_indexs = malloc(sizeof(int) * world.planet_capacity),
     };
+
+    world.id = global_core->next_world_id++;
+    //printf("%d\n", world.id);
 
     return world;
 }
@@ -78,6 +85,7 @@ bool world_add_planet(Planet *planet, World *world)
         int new_cap = world->planet_capacity * 2;
 
         Planet **new_planets = realloc(world->planets, new_cap * sizeof(Planet*));
+
         if(!new_planets) return false;
 
         int *new_g = realloc(world->gravity_planet_indexs, sizeof(int) * new_cap);
@@ -94,6 +102,8 @@ bool world_add_planet(Planet *planet, World *world)
     }
 
     world->planets[world->planet_count++] = planet;
+    planet->id = world->next_planet_id++;
+    //printf("%d\n", planet->id);
 
     initorbit(world);
 

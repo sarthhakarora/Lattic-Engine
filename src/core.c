@@ -40,6 +40,7 @@ Core core_create(CoreArgs args) {
         .isFirstFrame = true,
 
         .lua_initalzied = false,
+        .next_world_id = 1,
 
         .camera = create_camera(),
     };

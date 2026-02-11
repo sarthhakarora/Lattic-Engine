@@ -6,6 +6,7 @@
 
 typedef struct {
     char* name;
+    int64_t id;
     char* texture_path;
     ManagedTexture *texture;
     Model model;

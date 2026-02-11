@@ -2,13 +2,6 @@
 // LUA API TODO — PRIORITIZED
 // Personal C → Lua Orbital / N-Body Engine
 // ============================================================
-//
-//   RULES:
-// - Do NOT add Tier N+1 before Tier N is solid
-// - No generic setters, no tables-for-everything
-// - Explicit > flexible
-//
-// ============================================================
 // PART 1 — CORE ESSENTIALS (BARE MINIMUM TO FUNCTION)
 // ============================================================
 //
@@ -154,10 +147,15 @@ void init_luaapi(const char *scriptPath, lua_State *L);
 void init_lua(lua_State *L);
 void update_lua(lua_State *L);
 
+// Creation
 int l_create_world(lua_State *L);
 int l_world_add_planet(lua_State *L);
+
+// Pause and Resume
 int l_pause(lua_State *L);
 int l_resume(lua_State *L);
+
+// Keybinds
 int l_IsKeyPressed(lua_State *L);
 int l_IsKeyDown(lua_State *L);
 int l_IsKeyUp(lua_State *L);

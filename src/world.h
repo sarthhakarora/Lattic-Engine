@@ -7,6 +7,8 @@ typedef struct {
     bool valid;
 
     Planet **planets;
+    int64_t id;
+    int64_t next_planet_id;
     int planet_count;
     unsigned int planet_capacity;
     float gravity_strength;

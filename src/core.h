@@ -34,6 +34,7 @@ typedef struct {
 
     Cam camera;
     World active_world;
+    int64_t next_world_id;
     
 } Core;
 
