@@ -58,6 +58,8 @@ void init_luaapi(const char *scriptPath, lua_State *L)
 
     lua_register(L, "world_set_gravity_constant", l_world_set_gravity_constant);
 
+    lua_register(L, "world_get_gravity_constant", l_world_get_gravity_constant);
+
     lua_register(L, "pause", l_pause);
     lua_register(L, "resume", l_resume);
 
@@ -172,6 +174,13 @@ int l_world_set_gravity_constant(lua_State *L)
     } else {
         platform_throw_error_without_exit("Trying to set gravity before creation of world", "User error", PLATFORM_ICON_WARNING | PLATFORM_MSG_OK);
     }
+}
+
+int l_world_get_gravity_constant(lua_State *L)
+{
+    lua_pushnumber(L, global_core->active_world.gravity_strength);
+
+    return 1;
 }
 
 int l_pause(lua_State *L)

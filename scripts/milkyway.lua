@@ -115,6 +115,7 @@ function init()
         mass = 1,
         has_gravity = false
     }
+
 end
 
 function update()

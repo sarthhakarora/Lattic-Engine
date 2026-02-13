@@ -155,6 +155,9 @@ int l_world_add_planet(lua_State *L);
 // Planet and World setters
 int l_world_set_gravity_constant(lua_State *L);
 
+// Planet and World getters
+int l_world_get_gravity_constant(lua_State *L);
+
 // Pause and Resume
 int l_pause(lua_State *L);
 int l_resume(lua_State *L);
