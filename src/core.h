@@ -32,6 +32,8 @@ typedef struct {
 
     CursorMode cursor_mode;
 
+    bool is_paused;
+
     Cam camera;
     World active_world;
     int64_t next_world_id;

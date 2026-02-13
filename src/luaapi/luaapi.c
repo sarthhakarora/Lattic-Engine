@@ -56,9 +56,10 @@ void init_luaapi(const char *scriptPath, lua_State *L)
     lua_register(L, "create_world", l_create_world);
     lua_register(L, "add_planet", l_world_add_planet);
 
-    lua_register(L, "world_set_gravity_constant", l_world_set_gravity_constant);
+    lua_register(L, "set_world_gravity_constant", l_set_world_gravity_constant);
 
-    lua_register(L, "world_get_gravity_constant", l_world_get_gravity_constant);
+    lua_register(L, "get_world_gravity_constant", l_get_world_gravity_constant);
+    lua_register(L, "get_time_state", l_get_time_state);
 
     lua_register(L, "pause", l_pause);
     lua_register(L, "resume", l_resume);
@@ -165,7 +166,7 @@ int l_world_add_planet(lua_State *L)
     return 0;
 }
 
-int l_world_set_gravity_constant(lua_State *L)
+int l_set_world_gravity_constant(lua_State *L)
 {
     float gravity = (float)luaL_checknumber(L, 1);
 
@@ -176,9 +177,16 @@ int l_world_set_gravity_constant(lua_State *L)
     }
 }
 
-int l_world_get_gravity_constant(lua_State *L)
+int l_get_world_gravity_constant(lua_State *L)
 {
     lua_pushnumber(L, global_core->active_world.gravity_strength);
+
+    return 1;
+}
+
+int l_get_time_state(lua_State *L)
+{
+    lua_pushboolean(L, global_core->is_paused);
 
     return 1;
 }
@@ -187,6 +195,7 @@ int l_pause(lua_State *L)
 {
     global_core->active_world.savedTimeScale = global_core->active_world.timeScale;
     global_core->active_world.timeScale = 0.0f;
+    global_core->is_paused = true;
 
     return 0;
 }
@@ -194,6 +203,7 @@ int l_pause(lua_State *L)
 int l_resume(lua_State *L)
 {
     global_core->active_world.timeScale = global_core->active_world.savedTimeScale;
+    global_core->is_paused = false;
 
     return 0;
 }

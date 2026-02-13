@@ -42,6 +42,8 @@ Core core_create(CoreArgs args) {
         .lua_initalzied = false,
         .next_world_id = 1,
 
+        .is_paused = false,
+
         .camera = create_camera(),
     };
 

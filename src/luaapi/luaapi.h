@@ -143,26 +143,27 @@
 #include <lauxlib.h>
 #include <lualib.h>
 
-// Main functions
+// <-------- Core -------->
 void init_luaapi(const char *scriptPath, lua_State *L);
 void init_lua(lua_State *L);
 void update_lua(lua_State *L);
 
-// Creation
+// <-------- World Creation -------->
 int l_create_world(lua_State *L);
 int l_world_add_planet(lua_State *L);
 
-// Planet and World setters
-int l_world_set_gravity_constant(lua_State *L);
+// <-------- Setters -------->
+int l_set_world_gravity_constant(lua_State *L);
 
-// Planet and World getters
-int l_world_get_gravity_constant(lua_State *L);
+// <-------- Getters -------->
+int l_get_world_gravity_constant(lua_State *L);
+int l_get_time_state(lua_State *L);
 
-// Pause and Resume
+// <-------- Engine Control -------->
 int l_pause(lua_State *L);
 int l_resume(lua_State *L);
 
-// Keybinds
+// <-------- Input -------->
 int l_IsKeyPressed(lua_State *L);
 int l_IsKeyDown(lua_State *L);
 int l_IsKeyUp(lua_State *L);
