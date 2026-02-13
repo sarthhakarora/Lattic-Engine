@@ -158,6 +158,7 @@ int l_set_world_gravity_constant(lua_State *L);
 // <-------- Getters -------->
 int l_get_world_gravity_constant(lua_State *L);
 int l_get_time_state(lua_State *L);
+int l_get_delta_time(lua_State *L);
 
 // <-------- Engine Control -------->
 int l_pause(lua_State *L);

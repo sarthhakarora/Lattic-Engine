@@ -191,6 +191,13 @@ int l_get_time_state(lua_State *L)
     return 1;
 }
 
+int l_get_delta_time(lua_State *L)
+{
+    lua_pushnumber(L, global_core->active_world.deltaTime);
+
+    return 1;
+}
+
 int l_pause(lua_State *L)
 {
     global_core->active_world.savedTimeScale = global_core->active_world.timeScale;
