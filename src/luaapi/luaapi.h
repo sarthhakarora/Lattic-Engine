@@ -143,6 +143,7 @@
 #include <lauxlib.h>
 #include <lualib.h>
 
+// Main functions
 void init_luaapi(const char *scriptPath, lua_State *L);
 void init_lua(lua_State *L);
 void update_lua(lua_State *L);
@@ -150,6 +151,9 @@ void update_lua(lua_State *L);
 // Creation
 int l_create_world(lua_State *L);
 int l_world_add_planet(lua_State *L);
+
+// Planet and World setters
+int l_world_set_gravity_constant(lua_State *L);
 
 // Pause and Resume
 int l_pause(lua_State *L);
