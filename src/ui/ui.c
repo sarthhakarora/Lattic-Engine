@@ -14,6 +14,15 @@
 
 #define GUI_TEXT_MAX_LENGTH 255
 
+// ============================================================
+// TODO (Refactor Before v1):
+// - Move all static UI state into a UiState struct
+// - Extract planet creation logic out of ui()
+// - Remove styling() call from per-frame execution
+// - Split panel rendering into separate functions
+// - Centralize layout row calculation
+// ============================================================
+
 typedef enum {
     PANEL_GLOBAL,
     PANEL_PLANET,
