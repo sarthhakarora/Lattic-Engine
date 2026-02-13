@@ -56,6 +56,9 @@ void init_luaapi(const char *scriptPath, lua_State *L)
     lua_register(L, "create_world", l_create_world);
     lua_register(L, "add_planet", l_world_add_planet);
 
+    lua_register(L, "unload_planet", l_planet_unload);
+    lua_register(L, "unload_world", l_world_unload);
+
     lua_register(L, "set_world_gravity_constant", l_set_world_gravity_constant);
 
     lua_register(L, "get_world_gravity_constant", l_get_world_gravity_constant);
@@ -163,7 +166,9 @@ int l_world_add_planet(lua_State *L)
 
     world_add_planet(p, &global_core->active_world);
 
-    return 0;
+    lua_pushinteger(L, p->id);
+
+    return 1;
 }
 
 int l_set_world_gravity_constant(lua_State *L)
@@ -243,4 +248,22 @@ int l_IsKeyPressed(lua_State *L)
     lua_pushboolean(L, is_pressed);
 
     return 1;
+}
+
+int l_world_unload(lua_State *L)
+{
+    world_destroy(&global_core->active_world);
+
+    return 0;
+}
+
+int l_planet_unload(lua_State *L)
+{
+    int32_t id = luaL_checkinteger(L, 1);
+
+    Planet* planet = find_planet(&global_core->active_world, id);
+
+    planet_destroy(planet);
+
+    return 0;
 }

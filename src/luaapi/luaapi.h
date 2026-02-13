@@ -168,3 +168,7 @@ int l_resume(lua_State *L);
 int l_IsKeyPressed(lua_State *L);
 int l_IsKeyDown(lua_State *L);
 int l_IsKeyUp(lua_State *L);
+
+// <-------- Unload functions -------->
+int l_world_unload(lua_State *L);
+int l_planet_unload(lua_State *L);

@@ -1,3 +1,5 @@
+Earth = 0
+
 function init()
     create_world()
 
@@ -45,7 +47,7 @@ function init()
     }
 
     -- Earth
-    add_planet{
+    Earth = add_planet{
         name = "earth",
         texturepath = "assets/graphics/earth.jpg",
         radius = 6.5,
@@ -126,5 +128,4 @@ function update()
     if is_key_pressed(KEY.P) then
         resume()
     end
-
 end 

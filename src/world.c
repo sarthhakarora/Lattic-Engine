@@ -169,11 +169,17 @@ void world_update(World *world)
     old_timeScale = world->deltaTime;
 }
 
-void world_destroy(World *world) {
-    if(!world || !world->valid) {
-        return;
-    }
+Planet* find_planet(World* world, int64_t id) {
 
+    for(int i = 0; i < world->planet_count; i++) {
+        if(world->planets[i]->id == id) {
+            return world->planets[i];
+        }
+    } 
+    return NULL;
+}
+
+void world_destroy(World *world) {
     if(world->valid) {
         for(int i = 0; i < world->planet_count; i++) {
             planet_destroy(world->planets[i]);
