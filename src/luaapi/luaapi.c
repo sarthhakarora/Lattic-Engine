@@ -55,6 +55,7 @@ void init_luaapi(const char *scriptPath, lua_State *L)
 {
     lua_register(L, "create_world", l_create_world);
     lua_register(L, "add_planet", l_world_add_planet);
+    lua_register(L, "find_planet", l_find_planet);
 
     lua_register(L, "unload_planet", l_planet_unload);
     lua_register(L, "unload_world", l_world_unload);
@@ -220,6 +221,20 @@ int l_resume(lua_State *L)
     return 0;
 }
 
+int l_find_planet(lua_State *L)
+{
+    int64_t id = luaL_checknumber(L, 1);
+
+    Planet* planet = find_planet(&global_core->active_world, id);
+    if(planet == NULL){
+        lua_pushnil(L);
+    } else{
+        lua_pushinteger(L, id);
+    }
+
+    return 1;
+}
+
 int l_IsKeyDown(lua_State *L)
 {
     KeyboardKey key = (KeyboardKey)luaL_checkinteger(L, 1);
@@ -262,8 +277,12 @@ int l_planet_unload(lua_State *L)
     int32_t id = luaL_checkinteger(L, 1);
 
     Planet* planet = find_planet(&global_core->active_world, id);
+    if(planet == NULL) {
+        printf("ERROR: PLANET NOT FOUND");
+        return 0;
+    }
 
-    planet_destroy(planet);
+    world_unload_planet(&global_core->active_world, id);
 
     return 0;
 }

@@ -124,7 +124,6 @@ function update()
     if is_key_pressed(KEY.L) then
         pause()
     end
-
     if is_key_pressed(KEY.P) then
         resume()
     end

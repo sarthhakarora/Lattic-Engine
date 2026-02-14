@@ -24,12 +24,6 @@
 // planet:destroy()
 // planet:is_alive() -> bool
 //
-// Planet (motion)
-// planet:get_position() -> vec3
-// planet:set_position(vec3)
-// planet:get_velocity() -> vec3
-// planet:set_velocity(vec3)
-//
 // ============================================================
 // PART 2 — PHYSICS CONTROL & FORCE APPLICATION
 // ============================================================
@@ -40,6 +34,10 @@
 // planet:apply_force(vec3)
 // planet:apply_impulse(vec3)
 // planet:clear_forces()
+// planet:get_position() -> vec3
+// planet:set_position(vec3)
+// planet:get_velocity() -> vec3
+// planet:set_velocity(vec3)
 //
 // World helpers
 // world:get_planet_count() -> number
@@ -152,6 +150,10 @@ void update_lua(lua_State *L);
 int l_create_world(lua_State *L);
 int l_world_add_planet(lua_State *L);
 
+// <-------- Unload functions -------->
+int l_world_unload(lua_State *L);
+int l_planet_unload(lua_State *L);
+
 // <-------- Setters -------->
 int l_set_world_gravity_constant(lua_State *L);
 
@@ -163,12 +165,9 @@ int l_get_delta_time(lua_State *L);
 // <-------- Engine Control -------->
 int l_pause(lua_State *L);
 int l_resume(lua_State *L);
+int l_find_planet(lua_State *L);
 
 // <-------- Input -------->
 int l_IsKeyPressed(lua_State *L);
 int l_IsKeyDown(lua_State *L);
 int l_IsKeyUp(lua_State *L);
-
-// <-------- Unload functions -------->
-int l_world_unload(lua_State *L);
-int l_planet_unload(lua_State *L);

@@ -25,6 +25,7 @@ typedef struct {
 World world_create();
 bool world_add_planet(Planet *planet, World *world);
 Planet* find_planet(World* world, int64_t id);
+void world_unload_planet(World *world, int64_t id);
 void world_update(World* world);
 void world_draw(World* world);
 void world_destroy(World* world);
