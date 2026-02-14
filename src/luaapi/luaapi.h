@@ -1,137 +1,110 @@
 // ============================================================
-// LUA API TODO — PRIORITIZED
+// LUA API TODO — CLEANED & FLAT (HANDLE-BASED)
 // Personal C → Lua Orbital / N-Body Engine
 // ============================================================
-// PART 1 — CORE ESSENTIALS (BARE MINIMUM TO FUNCTION)
-// ============================================================
 //
-// Engine
-// engine.pause()
-// engine.resume()
-// engine.is_paused() -> bool
-// engine.get_time() -> number
-// engine.get_dt() -> number
+// ------------------------------------------------------------
+// PART 1 — CORE (CURRENT / MINIMAL STABLE API)
+// ------------------------------------------------------------
 //
-// World
-// create_world() -> world
-// world:step()
-// world:set_gravity(G)
-// world:get_gravity() -> number
-// world:clear()
+// -- Engine Control
+// pause()
+// resume()
+// is_paused() -> bool
+// get_dt() -> number
 //
-// Planet (creation + core state)
-// create_planet(mass, vec3_pos) -> planet
-// planet:destroy()
-// planet:is_alive() -> bool
+// -- World
+// create_world()
+// set_gravity(G)
+// get_gravity() -> number
+// clear_world()
 //
-// ============================================================
-// PART 2 — PHYSICS CONTROL & FORCE APPLICATION
-// ============================================================
+// -- Planet (Handle-Based)
+// create_planet{ ... } -> id
+// destroy_planet(id)
+// planet_exists(id) -> bool
 //
-// Planet (mass & forces)
-// planet:get_mass() -> number
-// planet:set_mass(mass)
-// planet:apply_force(vec3)
-// planet:apply_impulse(vec3)
-// planet:clear_forces()
-// planet:get_position() -> vec3
-// planet:set_position(vec3)
-// planet:get_velocity() -> vec3
-// planet:set_velocity(vec3)
 //
-// World helpers
-// world:get_planet_count() -> number
-// world:has_planet(planet) -> bool
+// ------------------------------------------------------------
+// PART 2 — PLANET STATE & PHYSICS CONTROL
+// ------------------------------------------------------------
 //
-// Physics helpers
-// compute_gravitational_force(planet_a, planet_b) -> vec3
-// distance_between(planet_a, planet_b) -> number
+// -- Planet State
+// planet_get_mass(id) -> number
+// planet_set_mass(id, mass)
 //
-// Simulation control
-// world:set_time_scale(scale)
-// world:get_time_scale() -> number
+// planet_get_position(id) -> vec3
+// planet_set_position(id, vec3)
 //
-// ============================================================
-// PART 3 — VECTOR MATH & NUMERICAL UTILITIES
-// ============================================================
+// planet_get_velocity(id) -> vec3
+// planet_set_velocity(id, vec3)
 //
-// Vector creation
+// -- Forces
+// planet_apply_force(id, vec3)
+// planet_apply_impulse(id, vec3)
+// planet_clear_forces(id)
+//
+// -- World Helpers
+// get_planet_count() -> number
+//
+//
+// ------------------------------------------------------------
+// PART 3 — VECTOR MATH
+// ------------------------------------------------------------
+//
 // vec3(x, y, z) -> vec3
 //
-// Vector inspection
-// vec3:length() -> number
-// vec3:length_squared() -> number
+// vec3_length(v) -> number
+// vec3_length_squared(v) -> number
+// vec3_normalize(v) -> vec3
 //
-// Vector ops
-// vec3:normalize() -> vec3
-// vec3:dot(other) -> number
-// vec3:cross(other) -> vec3
+// vec3_dot(a, b) -> number
+// vec3_cross(a, b) -> vec3
 //
-// Vector arithmetic
-// vec3:add(other) -> vec3
-// vec3:sub(other) -> vec3
-// vec3:mul(scalar) -> vec3
-// vec3:div(scalar) -> vec3
+// vec3_add(a, b) -> vec3
+// vec3_sub(a, b) -> vec3
+// vec3_mul(v, scalar) -> vec3
+// vec3_div(v, scalar) -> vec3
 //
-// Scalar helpers
 // clamp(value, min, max) -> number
 // lerp(a, b, t) -> number
 //
-// ============================================================
-// PART 4 — CALLBACKS, DEBUGGING, INSPECTION
-// ============================================================
 //
-// Callbacks
-// on_update(function(dt))
-// on_fixed_update(function(dt))
-// on_planet_destroyed(function(planet))
+// ------------------------------------------------------------
+// PART 4 — DEBUG / INSPECTION (OPTIONAL)
+// ------------------------------------------------------------
 //
-// Debug rendering
-// debug.draw_vector(position, vector, color)
-// debug.draw_point(position, color)
-// debug.draw_text(position, string)
+// debug_log(value)
+// debug_warn(value)
+// debug_error(value)
 //
-// Debug logging
-// debug.log(value)
-// debug.warn(value)
-// debug.error(value)
+// planet_get_id(id) -> number        -- debug only
+// planet_get_force_accumulator(id) -> vec3
 //
-// Inspection
-// planet:get_id() -> number        // debug only
-// planet:get_force_accumulator() -> vec3
 //
-// ============================================================
-// PART 5 — QUALITY OF LIFE / ADVANCED (ONLY IF NEEDED)
-// ============================================================
+// ------------------------------------------------------------
+// PART 5 — ADVANCED / OPTIONAL
+// ------------------------------------------------------------
 //
-// World queries
-// world:get_planets() -> table<planet>
-// world:find_nearest_planet(position) -> planet
+// get_planets() -> table<id>
+// find_nearest_planet(vec3) -> id
 //
-// Planet state flags
-// planet:enable_gravity(bool)
-// planet:is_gravity_enabled() -> bool
+// set_time_scale(scale)
+// get_time_scale() -> number
 //
-// Simulation control (advanced)
-// engine.step_once()
-// engine.set_fixed_dt(dt)
-// engine.get_fixed_dt() -> number
+// engine_step_once()
+// set_fixed_dt(dt)
+// get_fixed_dt() -> number
 //
-// Persistence (optional)
 // save_world(path)
 // load_world(path)
 //
-// Performance / metrics
-// engine.get_fps() -> number
-// engine.get_step_time() -> number
+// get_fps() -> number
+// get_step_time() -> number
 //
-// register_texture(name, path)
-// engine.preload_assets()
-// engine.are_assets_loaded() -> bool (optional)
 // ============================================================
 // END OF LUA API TODO
 // ============================================================
-
 #pragma once
 
 #include "raylib.h"
