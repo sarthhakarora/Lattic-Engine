@@ -146,7 +146,7 @@ int l_world_add_planet(lua_State *L)
     lua_pop(L, 1);
 
     lua_getfield(L, 1, "mass");
-    int mass = luaL_checkinteger(L, -1);
+    int mass = luaL_checknumber(L, -1);
     lua_pop(L, 1);
 
     lua_getfield(L, 1, "has_gravity");
