@@ -5,6 +5,7 @@
 #include <stdbool.h>
 
 typedef struct {
+    Image img;
     Texture2D texture;
     int refCount;
     bool loaded;
