@@ -57,7 +57,8 @@ Core core_create(CoreArgs args) {
   }
 #endif
 
-  InitWindow(core.screenWidth, core.screenHeight, "Orbital Physics Simulator");
+  InitWindow(core.screenWidth, core.screenHeight,
+             "Lattic Engine v1 - Sarthhak Arora");
 
   core.bootStart = GetTime();
   core.camera = create_camera();

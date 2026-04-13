@@ -7,9 +7,8 @@
 #include "stdlib.h"
 #include "string.h"
 #include "ui/ui_widgets.h"
+#include <stdbool.h>
 #include <stdio.h>
-
-static const char *scripts[] = {};
 
 Camera2D camera = {
     .offset = (Vector2){0, 0},
@@ -20,10 +19,13 @@ Camera2D camera = {
 
 static void main_menu(Core *core, int *choice, char *choiceText,
                       ScriptList *scripts, bool *dropDownOpen, int *appstate) {
-  const char *title = "Lettic engine";
-  const char *subtitle = "v1 Orbital Physics Simulator - By Sarthhak";
 
-  static LoadTracker loader = {.total = 0, .done = 0};
+  Rectangle titleBox = {GetScreenWidth() / 2 - 300, GetScreenHeight() * 0.18f,
+                        600, 140};
+
+  DrawRectangleLinesEx(titleBox, 1, (Color){200, 200, 200, 80});
+  const char *title = "Lattic engine";
+  const char *subtitle = "v1 Orbital Physics Simulator - By Sarthhak";
 
   Font font = GetFontDefault();
 
@@ -31,62 +33,61 @@ static void main_menu(Core *core, int *choice, char *choiceText,
   Vector2 subtitleSize = MeasureTextEx(font, subtitle, 15, 1.0f);
 
   DrawTextPro(font, title,
-              (Vector2){GetScreenWidth() / 2 - tilesize.x / 2,
-                        GetScreenHeight() / 2 * 0.2},
+              (Vector2){GetScreenWidth() / 2 - tilesize.x / 2, titleBox.y + 30},
               (Vector2){0, 0}, 0.0f, 40, 1.0f, (Color){200, 200, 200, 255});
-  DrawTextPro(font, subtitle,
-              (Vector2){GetScreenWidth() / 2 - subtitleSize.x / 2,
-                        GetScreenHeight() / 2 * 0.3 + 10},
-              (Vector2){0, 0}, 0.0f, 15, 1.0f, (Color){150, 150, 150, 255});
 
-  DrawBoundingBox(
-      (BoundingBox){
-          .min = (Vector3){GetScreenWidth() / 2 - (subtitleSize.x) / 2 - 20,
-                           GetScreenHeight() / 2 * 0.15, 0},
-          .max = (Vector3){GetScreenWidth() / 2 + (subtitleSize.x) / 2 + 20,
-                           GetScreenHeight() / 2 * 0.25 + subtitleSize.y +
-                               tilesize.y + 20,
-                           0}},
-      (Color){100, 100, 100, 255});
+  DrawTextPro(
+      font, subtitle,
+      (Vector2){GetScreenWidth() / 2 - subtitleSize.x / 2, titleBox.y + 80},
+      (Vector2){0, 0}, 0.0f, 15, 1.0f, (Color){150, 150, 150, 255});
 
-  Rectangle dropDownRec =
-      (Rectangle){GetScreenWidth() / 2 - 200, GetScreenHeight() / 2 * 0.8f, 400,
-                  tilesize.y};
+  Rectangle dropDownRec = {GetScreenWidth() / 2 - 200, GetScreenHeight() * 0.7f,
+                           400, tilesize.y};
 
   Vector2 mousepos = GetMousePosition();
 
-  bool mouseOverDropdown =
-      CheckCollisionPointRec(mousepos, dropDownRec) || *dropDownOpen;
-
-  static bool dropDownPressed;
   static bool settingsButtonPressed;
   static bool startButtonPressed;
 
-  static float x = 0.0f;
-  float y = 0.0f;
-  float z = 30.0f;
+  if (core->isStarting) {
 
-  x += 0.0001f;
+    GuiProgressBar((Rectangle){GetScreenWidth() / 2 - 200,
+                               GetScreenHeight() * 0.6f, 400, tilesize.y},
+                   NULL, NULL, &core->progress, 0.0f, 1.0f);
 
-  GuiProgressBar((Rectangle){GetScreenWidth() / 2 - 200,
-                             GetScreenHeight() / 2 * 1.0f, 400, tilesize.y},
-                 NULL, NULL, &x, y, z);
-  startButtonPressed =
-      GuiButton((Rectangle){GetScreenWidth() / 2 - 200,
-                            GetScreenHeight() / 2 * 1.2f, 400, tilesize.y},
-                "Start Engine");
-  settingsButtonPressed =
-      GuiButton((Rectangle){GetScreenWidth() / 2 - 200,
-                            GetScreenHeight() / 2 * 1.4f, 400, tilesize.y},
-                "Settings");
-  dropDownPressed =
-      GuiDropdownBox(dropDownRec, choiceText, choice, *dropDownOpen);
+    core->progress += GetFrameTime() * 0.8f;
 
-  if (dropDownPressed) {
-    *dropDownOpen = !*dropDownOpen;
+    if (core->progress >= 1.0f) {
+      core->progress = 1.0f;
+
+      core->L = luaL_newstate();
+      luaL_openlibs(core->L);
+
+      init_luaapi(scripts->paths[*choice], core->L);
+      init_lua(core->L);
+
+      core->cursor_mode = CURSOR_CAMERA;
+      core->core_active = true;
+      core->isStarting = false;
+    }
+
+    return;
   }
 
-  if (!mouseOverDropdown && startButtonPressed) {
+  startButtonPressed =
+      GuiButton((Rectangle){GetScreenWidth() / 2 - 200,
+                            GetScreenHeight() * 0.75f, 400, tilesize.y},
+                "Start Engine");
+
+  settingsButtonPressed =
+      GuiButton((Rectangle){GetScreenWidth() / 2 - 200,
+                            GetScreenHeight() * 0.85f, 400, tilesize.y},
+                "Settings");
+
+  if (GuiDropdownBox(dropDownRec, choiceText, choice, *dropDownOpen)) {
+    *dropDownOpen = !(*dropDownOpen);
+  }
+  if (startButtonPressed && !core->isStarting) {
     if (*choice < 0 || *choice >= scripts->count) {
       platform_throw_error_without_exit("Invalid selection", "User Error",
                                         PLATFORM_ICON_WARNING |
@@ -94,48 +95,30 @@ static void main_menu(Core *core, int *choice, char *choiceText,
       return;
     }
 
-    core->L = luaL_newstate();
-    luaL_openlibs(core->L);
-
-    init_luaapi(scripts->paths[*choice], core->L);
-    init_lua(core->L);
-
-    core->cursor_mode = CURSOR_CAMERA;
-    core->core_active = true;
-
-    if (core->active_world.valid) {
-      loader.total += core->active_world.planet_count;
-    }
+    core->isStarting = true;
+    core->progress = 0.0f;
   }
 
-  if (!mouseOverDropdown && settingsButtonPressed) {
+  if (settingsButtonPressed) {
     *appstate = APP_STATE_SETTINGS;
   }
 }
 
 static void settings_menu(Core *core, int *choice, char *choiceText,
                           ScriptList *scripts, bool *editMode, int *appstate) {
-  const char *title = "Settings";
 
+  const char *title = "Settings";
   Font font = GetFontDefault();
 
   Vector2 tilesize = MeasureTextEx(font, title, 40, 1.0f);
 
   DrawTextPro(font, title,
               (Vector2){GetScreenWidth() / 2 - tilesize.x / 2,
-                        GetScreenHeight() / 2 * 0.2},
+                        GetScreenHeight() * 0.2f},
               (Vector2){0, 0}, 0.0f, 40, 1.0f, (Color){200, 200, 200, 255});
 
-  DrawBoundingBox(
-      (BoundingBox){
-          .min = (Vector3){GetScreenWidth() / 2 - (tilesize.x) / 2 - 20,
-                           GetScreenHeight() / 2 * 0.15, 0},
-          .max = (Vector3){GetScreenWidth() / 2 + (tilesize.x) / 2 + 20,
-                           GetScreenHeight() / 2 * 0.25 + tilesize.y, 0}},
-      (Color){100, 100, 100, 255});
-
   if (GuiButton((Rectangle){GetScreenWidth() / 2 - 200,
-                            GetScreenHeight() / 2 * 1.0f, 400, tilesize.y},
+                            GetScreenHeight() * 0.8f, 400, tilesize.y},
                 "Back to Menu")) {
     *appstate = APP_STATE_MENU;
   }
@@ -143,9 +126,34 @@ static void settings_menu(Core *core, int *choice, char *choiceText,
 
 static void draw_app(Core *core, int *choice, char *choiceText,
                      ScriptList *scripts, bool *editMode, int *appstate) {
+
   BeginDrawing();
-  BeginMode2D(camera);
-  ClearBackground(BLACK);
+  ClearBackground(BLACK); // ← ONLY here
+
+  float time = GetTime();
+  Vector2 mouse = GetMousePosition();
+  Vector2 res = {GetScreenWidth(), GetScreenHeight()};
+
+  static Shader bgShader;
+  static bool shaderLoaded = false;
+
+  if (!shaderLoaded) {
+    bgShader = LoadShader(0, "../assets/shaders/bg.fs");
+    shaderLoaded = true;
+  }
+
+  SetShaderValue(bgShader, GetShaderLocation(bgShader, "time"), &time,
+                 SHADER_UNIFORM_FLOAT);
+  SetShaderValue(bgShader, GetShaderLocation(bgShader, "mouse"), &mouse,
+                 SHADER_UNIFORM_VEC2);
+  SetShaderValue(bgShader, GetShaderLocation(bgShader, "resolution"), &res,
+                 SHADER_UNIFORM_VEC2);
+
+  BeginShaderMode(bgShader);
+  DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), WHITE);
+  EndShaderMode();
+
+  /// BeginMode2D(camera);
 
   if (*appstate == APP_STATE_MENU) {
     main_menu(core, choice, choiceText, scripts, editMode, appstate);
@@ -153,11 +161,16 @@ static void draw_app(Core *core, int *choice, char *choiceText,
     settings_menu(core, choice, choiceText, scripts, editMode, appstate);
   }
 
-  EndMode2D();
+  // EndMode2D();
+
   EndDrawing();
 }
 
 void app_run(Core *core, bool *program_active) {
+
+  if (core->core_active)
+    return;
+
   core->cursor_mode = CURSOR_UI;
   handle_cursor_input(core);
   enable_cursor(core);
@@ -174,15 +187,13 @@ void app_run(Core *core, bool *program_active) {
     scripts_loaded = true;
   }
 
-  fullscreen();
-
   if (scripts.count == 0) {
-    printf("No Lua scripts found in /scripts\n");
+    printf("No Lua scripts found\n");
     return;
   }
 
-  static int choice = -1;
-  static char choiceText[4069];
+  static int choice = 0;
+  static char choiceText[4096];
   static bool built = false;
   static bool dropDownOpen = false;
 
@@ -200,4 +211,3 @@ void app_run(Core *core, bool *program_active) {
 
   draw_app(core, &choice, choiceText, &scripts, &dropDownOpen, &appstate);
 }
-

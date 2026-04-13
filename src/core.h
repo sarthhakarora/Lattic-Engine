@@ -3,41 +3,40 @@
 #include "raylib.h"
 
 #include "camera.h"
-#include "string.h"
-#include "world.h"
 #include "lua.h"
 #include "planet.h"
+#include "string.h"
+#include "world.h"
 
 typedef struct {
-    bool show_logs;
+  bool show_logs;
 } CoreArgs;
 
-typedef enum {
-    CURSOR_UI,
-    CURSOR_CAMERA
-} CursorMode;
+typedef enum { CURSOR_UI, CURSOR_CAMERA } CursorMode;
 
 typedef struct {
-    const int screenWidth;
-    const int screenHeight;   
-    bool core_active;
-    bool program_active;
+  const int screenWidth;
+  const int screenHeight;
+  bool core_active;
+  bool program_active;
 
-    float bootTime;
-    float bootStart;
-    bool isFirstFrame;
+  float bootTime;
+  float bootStart;
+  bool isFirstFrame;
 
-    lua_State *L;
-    bool lua_initalzied;
+  lua_State *L;
+  bool lua_initalzied;
 
-    CursorMode cursor_mode;
+  CursorMode cursor_mode;
 
-    bool is_paused;
+  bool is_paused;
+  bool isStarting;
+  float progress;
 
-    Cam camera;
-    World active_world;
-    int64_t next_world_id;
-    
+  Cam camera;
+  World active_world;
+  int64_t next_world_id;
+
 } Core;
 
 void enable_cursor(Core *core);
