@@ -16,7 +16,7 @@ The goal of this project was **not ultra realism or NASA level accuracy**, but t
 
 ## Demo
 
-![Orbit demo](assets/demo.gif)
+![Orbit demo](assets/output.gif)
 
 ---
 
