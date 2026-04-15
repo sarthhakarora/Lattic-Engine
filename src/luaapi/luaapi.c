@@ -61,6 +61,7 @@ void init_luaapi(const char *scriptPath, lua_State *L) {
   lua_register(L, "create_world", l_create_world);
   lua_register(L, "add_planet", l_world_add_planet);
   lua_register(L, "find_planet", l_find_planet);
+  lua_register(L, "draw_grid", l_draw_grid);
 
   lua_register(L, "unload_planet", l_planet_unload);
   lua_register(L, "unload_world", l_world_unload);
@@ -227,6 +228,17 @@ int l_find_planet(lua_State *L) {
   }
 
   return 1;
+}
+
+int l_draw_grid(lua_State *L) {
+  int size = luaL_checkinteger(L, 1);
+  float spacing = luaL_checknumber(L, 2);
+
+  if (global_core->active_world.valid && global_core->active_world.drawGrid) {
+    DrawGrid(size, spacing);
+  }
+
+  return 0;
 }
 
 int l_IsKeyDown(lua_State *L) {

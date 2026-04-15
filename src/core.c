@@ -175,9 +175,8 @@ void core_draw(Core *core) {
 
   if (core->active_world.valid) {
     world_draw(&core->active_world);
+    update_lua(core->L);
   }
-
-  DrawGrid(300, 10.4);
 
   EndMode3D();
 
@@ -212,8 +211,6 @@ static void core_update(Core *core) {
     }
     UnloadImage(img);
   }
-
-  update_lua(core->L);
 
   handle_cursor_input(core);
   enable_cursor(core);

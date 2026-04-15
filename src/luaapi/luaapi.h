@@ -107,11 +107,11 @@
 // ============================================================
 #pragma once
 
-#include "raylib.h"
 #include "../planet.h"
 #include "../world.h"
-#include <lua.h>
+#include "raylib.h"
 #include <lauxlib.h>
+#include <lua.h>
 #include <lualib.h>
 
 // <-------- Core -------->
@@ -139,6 +139,7 @@ int l_get_delta_time(lua_State *L);
 int l_pause(lua_State *L);
 int l_resume(lua_State *L);
 int l_find_planet(lua_State *L);
+int l_draw_grid(lua_State *L);
 
 // <-------- Input -------->
 int l_IsKeyPressed(lua_State *L);

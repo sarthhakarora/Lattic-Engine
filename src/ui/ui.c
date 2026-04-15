@@ -154,7 +154,6 @@ static void ui_planet_inspector(Layout *layout, World *world) {
       shown++;
     }
 
-    // optional: show hint if truncated
     if (shown >= 10) {
       GuiLabel(layout_row(layout, 18), "...more results");
     }
@@ -251,6 +250,12 @@ void ui(World *world) {
   if (GuiButton(layout_row(&layout, 24),
                 current == LINKS_ALL ? "> All" : "All")) {
     world->linkMode = LINKS_ALL;
+  }
+
+  GuiLabel(layout_row(&layout, 18), "Grid State");
+  if (GuiButton(layout_row(&layout, 24),
+                world->drawGrid ? "[Grid On]" : "Grid Off")) {
+    world->drawGrid = !world->drawGrid;
   }
   // ------------------------------------------------------------
   // CREATE PLANET
