@@ -58,7 +58,7 @@ function init()
 end
 
 function update()
-	draw_grid(5, 20)
+	draw_grid(0, 20)
 
 	if is_key_pressed(KEY.L) then
 		pause()

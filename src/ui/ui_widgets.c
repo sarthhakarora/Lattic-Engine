@@ -184,7 +184,7 @@ bool UiFilePicker(Rectangle content, const char *label, char *path,
                   int path_size) {
   if (GuiButton((Rectangle){content.x, content.y + 4 * 60, content.width, 20},
                 label)) {
-    return platfrom_open_file(path, path_size);
+    return platform_open_file(path, path_size);
   }
   return false;
 }

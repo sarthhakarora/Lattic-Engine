@@ -1,6 +1,9 @@
-#include <windows.h>
-#include "commdlg.h"
+#define WIN32_LEAN_AND_MEAN
+#define NOMINMAX
 
+#include <windows.h>
+
+#include "commdlg.h"
 #include "stdbool.h"
 #include "stddef.h"
 #include "stdio.h"
@@ -8,7 +11,7 @@
 
 #include "platform_win32.h"
 
-bool platfrom_open_file(char *out_path, size_t max_len) {
+bool platform_open_file(char *out_path, size_t max_len) {
   OPENFILENAMEA ofn = {0};
   out_path[0] = '\0';
 

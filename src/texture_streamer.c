@@ -1,16 +1,12 @@
-#include <string.h>
-#define WIN32_LEAN_AND_MEAN
-#define NOMINMAX
-#define NOGDI
-#define NOUSER
-#include "process.h"
-#include "stdio.h"
 #include "texture_streamer.h"
-#include "windows.h"
-#include <stdbool.h>
+#include "platform/platform_win32_threading.h"
+#include "stdio.h"
 
-static HANDLE workerThread;
-static CRITICAL_SECTION lock;
+#include <stdbool.h>
+#include <string.h>
+
+static PlatformThread *workerThread;
+static PlatformMutex *lock;
 static bool running;
 
 static const char **jobPaths;
@@ -20,86 +16,86 @@ static int jobIndex;
 static TextureStreamJob results[256];
 static int resultCount;
 
-unsigned __stdcall worker_proc(void *arg);
+void worker_proc(void *arg);
 
 void loader_init(void) {
-  InitializeCriticalSection(&lock);
+  lock = mutex_create();
   running = true;
-  workerThread = (HANDLE)_beginthreadex(NULL, 0, worker_proc, NULL, 0, NULL);
+  workerThread = thread_create(worker_proc, NULL);
 }
 
-unsigned __stdcall worker_proc(void *arg) {
+void worker_proc(void *arg) {
   while (running) {
 
-    const char *bufferimg = NULL;
-    EnterCriticalSection(&lock);
-    bool isJobAvi = (jobIndex < jobCount) ? true : false;
+    mutex_lock(lock);
+    bool isJobAvi = (jobIndex < jobCount);
 
     int currentIndex = jobIndex;
     char local_path[256];
-    if (isJobAvi) {
-      strncpy(local_path, jobPaths[jobIndex], 255);
 
+    if (isJobAvi) {
+      strncpy(local_path, jobPaths[currentIndex], 255);
       local_path[255] = '\0';
+
+      strncpy(results[currentIndex].path, local_path, 255);
+      results[currentIndex].path[255] = '\0';
+
       jobIndex++;
     }
 
-    LeaveCriticalSection(&lock);
+    mutex_unlock(lock);
 
     if (isJobAvi) {
-      results[currentIndex].img =
-          LoadImage(local_path); // jobIndex-- gives current index
+      results[currentIndex].img = LoadImage(local_path);
       results[currentIndex].imageLoaded = true;
+
       if (results[currentIndex].img.data == NULL) {
         results[currentIndex].failed = true;
       } else {
-        EnterCriticalSection(&lock);
+        mutex_lock(lock);
         resultCount++;
-        LeaveCriticalSection(&lock);
+        mutex_unlock(lock);
       }
     } else {
-      Sleep(1);
+      thread_sleep(1);
     }
   }
-
-  return 0;
 }
 
 void loader_start(const char **paths, int count) {
-  EnterCriticalSection(&lock);
+  mutex_lock(lock);
   jobPaths = paths;
   jobCount = count;
   jobIndex = 0;
-  LeaveCriticalSection(&lock);
+  mutex_unlock(lock);
 }
 
-bool loader_poll(Image *outImage, const char **outPath) {
-  EnterCriticalSection(&lock);
+bool loader_poll(Image *outImage, char *outPath) {
+  mutex_lock(lock);
+
   if (resultCount > 0) {
     *outImage = results[0].img;
-    *outPath = results[0].path;
+    strcpy(outPath, results[0].path);
   } else {
-    LeaveCriticalSection(&lock);
+    mutex_unlock(lock);
     return false;
   }
+
   resultCount--;
+
   for (int i = 0; i < resultCount; i++) {
     results[i] = results[i + 1];
   }
-  LeaveCriticalSection(&lock);
+
+  mutex_unlock(lock);
   return true;
 }
 
-bool loader_is_done(void) {
-  if (jobIndex >= jobCount && resultCount == 0) {
-    return true;
-  }
-  return false;
-}
+bool loader_is_done(void) { return (jobIndex >= jobCount && resultCount == 0); }
 
 void loader_shutdown(void) {
   running = false;
-  WaitForSingleObject(workerThread, INFINITE);
-  CloseHandle(workerThread);
-  DeleteCriticalSection(&lock);
+  thread_join(workerThread);
+  thread_destroy(workerThread);
+  mutex_destroy(lock);
 }

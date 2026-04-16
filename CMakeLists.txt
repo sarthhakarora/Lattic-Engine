@@ -19,6 +19,7 @@ add_executable(orbitalPhysics
     src/ui/ui.c
     src/ui/ui_widgets.c
     src/platform/platform_win32.c
+    src/platform/platform_win32_threading.c
     src/luaapi/luaapi.c
 )
 
