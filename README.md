@@ -137,10 +137,10 @@ Note: lower values in the scripts if you notice bad perfromance (more optimaizti
 
 ```
 git clone https://github.com/sarthhakarora/Orbital-Physics-Simulator.git
+cd Orbital-Physics-Simulator
 mkdir build
 cmake -S . -B build -G "MinGW Makefiles"
-cd build
-cmake --build . --target run
+cmake --build build --target run
 ```
 
 ## LINUX
@@ -153,13 +153,18 @@ cmake --build . --target run
 
 # Build Instructions (wine)
 
-**WARNING: ** This is not native linux support this is running on linux via the translation layer wine
+**WARNING:** This is not native linux support this is running on linux via the translation layer wine
 ```
 git clone https://github.com/sarthhakarora/Orbital-Physics-Simulator.git
+cd Orbital-Physics-Simulator
+
 mkdir build
-cmake -S . -B build -DCMAKE_SYSTEM_NAME=Windows -DCMAKE_C_COMPILER=x86_64-w64-mingw32-gcc
-cd build
-make
+cmake -S . -B build \
+-DCMAKE_SYSTEM_NAME=Windows \
+-DCMAKE_C_COMPILER=x86_64-w64-mingw32-gcc \
+-DCMAKE_CXX_COMPILER=x86_64-w64-mingw32-g++
+
+cmake --build build
 ```
 
 ---
