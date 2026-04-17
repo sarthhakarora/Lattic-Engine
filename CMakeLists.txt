@@ -1,12 +1,12 @@
 cmake_minimum_required(VERSION 3.10)
 
-project(orbitalPhysics LANGUAGES C CXX)
+project(latticEngine LANGUAGES C CXX)
 
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_BUILD_TYPE Debug)
 
-add_executable(orbitalPhysics
+add_executable(latticEngine
     src/main.c
     src/core.c
     src/timer.c
@@ -23,42 +23,36 @@ add_executable(orbitalPhysics
     src/luaapi/luaapi.c
 )
 
-target_include_directories(orbitalPhysics PRIVATE
+target_include_directories(latticEngine PRIVATE
     ${CMAKE_SOURCE_DIR}/include
-    ${CMAKE_SOURCE_DIR}/external/nuklear
+    ${CMAKE_SOURCE_DIR}/include/lua
 )
 
-target_link_libraries(orbitalPhysics PRIVATE
+target_link_libraries(latticEngine PRIVATE
     ${CMAKE_SOURCE_DIR}/lib/libraylib.a
-)
-target_link_libraries(orbitalPhysics PRIVATE
     ${CMAKE_SOURCE_DIR}/lib/lua/liblua54.a
 )
 
-if (WIN32)
-    target_link_libraries(orbitalPhysics PRIVATE winmm gdi32)
+if(WIN32)
+    target_link_libraries(latticEngine PRIVATE
+        winmm gdi32 opengl32 user32 kernel32
+    )
 endif()
 
-add_custom_target(run
-    COMMAND $<TARGET_FILE:orbitalPhysics>
-    DEPENDS orbitalPhysics
-    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+add_custom_command(TARGET latticEngine POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        ${CMAKE_SOURCE_DIR}/lib/lua/lua54.dll
+        $<TARGET_FILE_DIR:latticEngine>
 )
 
-add_custom_command(TARGET orbitalPhysics POST_BUILD
+add_custom_command(TARGET latticEngine POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory
-            ${CMAKE_SOURCE_DIR}/assets
-            $<TARGET_FILE_DIR:orbitalPhysics>/assets
+        ${CMAKE_SOURCE_DIR}/assets
+        $<TARGET_FILE_DIR:latticEngine>/assets
 )
 
-add_custom_command(TARGET orbitalPhysics POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            ${CMAKE_SOURCE_DIR}/lib/raylib.dll
-            $<TARGET_FILE_DIR:orbitalPhysics>
-)
-
-add_custom_command(TARGET orbitalPhysics POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            ${CMAKE_SOURCE_DIR}/lib/lua/lua54.dll
-            $<TARGET_FILE_DIR:orbitalPhysics>
-)
+add_custom_target(run
+    COMMAND $<TARGET_FILE:latticEngine>
+    DEPENDS latticEngine
+    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+) 
