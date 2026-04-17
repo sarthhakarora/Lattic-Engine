@@ -40,12 +40,6 @@ if(WIN32)
 endif()
 
 add_custom_command(TARGET latticEngine POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        ${CMAKE_SOURCE_DIR}/lib/lua/lua54.dll
-        $<TARGET_FILE_DIR:latticEngine>
-)
-
-add_custom_command(TARGET latticEngine POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory
         ${CMAKE_SOURCE_DIR}/assets
         $<TARGET_FILE_DIR:latticEngine>/assets
