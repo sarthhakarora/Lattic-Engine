@@ -46,9 +46,6 @@ static void main_menu(Core *core, int *choice, char *choiceText,
 
   Vector2 mousepos = GetMousePosition();
 
-  static bool settingsButtonPressed;
-  static bool startButtonPressed;
-
   if (core->isStarting) {
 
     GuiProgressBar((Rectangle){GetScreenWidth() / 2 - 200,
@@ -74,25 +71,34 @@ static void main_menu(Core *core, int *choice, char *choiceText,
     return;
   }
 
-  startButtonPressed =
-      GuiButton((Rectangle){GetScreenWidth() / 2 - 200,
-                            GetScreenHeight() * 0.75f, 400, tilesize.y},
-                "Start Engine");
+  bool settingsButtonPressed = false;
+  bool startButtonPressed = false;
 
-  settingsButtonPressed =
-      GuiButton((Rectangle){GetScreenWidth() / 2 - 200,
-                            GetScreenHeight() * 0.85f, 400, tilesize.y},
-                "Settings");
+  bool dropdownPressed = GuiDropdownBox(dropDownRec, choiceText, choice, *dropDownOpen);
 
-  if (GuiDropdownBox(dropDownRec, choiceText, choice, *dropDownOpen)) {
-    *dropDownOpen = !(*dropDownOpen);
+  if (dropdownPressed) {
+      *dropDownOpen = !(*dropDownOpen);
   }
+
+  bool blockInput = *dropDownOpen || dropdownPressed;
+
+  if (!blockInput) {
+      startButtonPressed =
+          GuiButton((Rectangle){GetScreenWidth() / 2 - 200,
+                                GetScreenHeight() * 0.75f, 400, tilesize.y},
+                    "Start Engine");
+
+      settingsButtonPressed =
+          GuiButton((Rectangle){GetScreenWidth() / 2 - 200,
+                                GetScreenHeight() * 0.85f, 400, tilesize.y},
+                    "Settings");
+  }
+
   if (startButtonPressed && !core->isStarting) {
     if (*choice < 0 || *choice >= scripts->count) {
-      platform_throw_error_without_exit("Invalid selection", "User Error",
-                                        PLATFORM_ICON_WARNING |
-                                            PLATFORM_MSG_OK);
-      return;
+        platform_throw_error_without_exit("Invalid selection", "User Error",
+                                          PLATFORM_ICON_WARNING | PLATFORM_MSG_OK);
+        return;
     }
 
     core->isStarting = true;
@@ -100,8 +106,9 @@ static void main_menu(Core *core, int *choice, char *choiceText,
   }
 
   if (settingsButtonPressed) {
-    *appstate = APP_STATE_SETTINGS;
+      *appstate = APP_STATE_SETTINGS;
   }
+
 }
 
 static void settings_menu(Core *core, int *choice, char *choiceText,
