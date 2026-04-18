@@ -4,7 +4,7 @@ function init()
     -- CENTRAL BLACK HOLE (static gravity)
     add_planet{
         name = "sagittarius_a",
-        texturepath = "assets/graphics/sun.jpg", -- placeholder visual
+        texturepath = "../assets/graphics/sun.jpg", -- placeholder visual
         radius = 35,
         position = {0, 0, 0},
         rings = 64,
@@ -24,7 +24,7 @@ function init()
 
         add_planet{
             name = "bulge_" .. i,
-            texturepath = "assets/graphics/ceres.jpg",
+            texturepath = "../assets/graphics/ceres.jpg",
             radius = 2,
             position = {
                 math.cos(a) * r,
@@ -55,7 +55,7 @@ function init()
 
         add_planet{
             name = "star_" .. i,
-            texturepath = "assets/graphics/makemake.jpg",
+            texturepath = "../assets/graphics/makemake.jpg",
             radius = 1.8,
             position = {
                 math.cos(a) * r,

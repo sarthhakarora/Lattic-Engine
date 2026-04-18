@@ -4,7 +4,7 @@ function init()
 	-- single gravity core
 	add_planet({
 		name = "core",
-		texturepath = "assets/graphics/sun.jpg",
+		texturepath = "../assets/graphics/sun.jpg",
 		radius = 25,
 		position = { 0, 0, 0 },
 		rings = 48,
@@ -26,7 +26,7 @@ function init()
 		-- strand A
 		add_planet({
 			name = "dna_a_" .. i,
-			texturepath = "assets/graphics/eris.jpg",
+			texturepath = "../assets/graphics/eris.jpg",
 			radius = 2.5,
 			position = {
 				math.cos(angle) * (base_radius + radius_offset),
@@ -42,7 +42,7 @@ function init()
 		-- strand B (phase shifted)
 		add_planet({
 			name = "dna_b_" .. i,
-			texturepath = "assets/graphics/neptune.jpg",
+			texturepath = "../assets/graphics/neptune.jpg",
 			radius = 2.5,
 			position = {
 				math.cos(angle + math.pi) * (base_radius - radius_offset),

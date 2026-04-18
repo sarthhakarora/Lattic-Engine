@@ -12,18 +12,18 @@ local GALAXY_OFFSET = 3000
 local GALAXY_APPROACH_SPEED = 80
 
 local TEXTURES = {
-    "assets/graphics/mercury.jpg",
-    "assets/graphics/venus.jpg",
-    "assets/graphics/earth.jpg",
-    "assets/graphics/mars.jpg",
-    "assets/graphics/jupiter.jpg",
-    "assets/graphics/saturn.jpg",
-    "assets/graphics/uranus.jpg",
-    "assets/graphics/neptune.jpg",
-    "assets/graphics/moon.jpg",
-    "assets/graphics/makemake.jpg",
-    "assets/graphics/haumea.jpg",
-    "assets/graphics/ceres.jpg"
+    "../assets/graphics/mercury.jpg",
+    "../assets/graphics/venus.jpg",
+    "../assets/graphics/earth.jpg",
+    "../assets/graphics/mars.jpg",
+    "../assets/graphics/jupiter.jpg",
+    "../assets/graphics/saturn.jpg",
+    "../assets/graphics/uranus.jpg",
+    "../assets/graphics/neptune.jpg",
+    "../assets/graphics/moon.jpg",
+    "../assets/graphics/makemake.jpg",
+    "../assets/graphics/haumea.jpg",
+    "../assets/graphics/ceres.jpg"
 }
 
 local function randf(a, b)
@@ -39,7 +39,7 @@ local function spawn_galaxy(center_x, direction)
     -- Supermassive core (Sagittarius A*)
     add_planet{
         name = "core",
-        texturepath = "assets/graphics/sun.jpg",
+        texturepath = "../assets/graphics/sun.jpg",
         radius = 60,
         position = {center_x, 0, 0},
         rings = 48,

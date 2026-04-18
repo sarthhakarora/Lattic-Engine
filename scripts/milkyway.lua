@@ -8,7 +8,7 @@ function init()
     -- =========================
     add_planet{
         name = "sun",
-        texturepath = "assets/graphics/sun.jpg",
+        texturepath = "../assets/graphics/sun.jpg",
         radius = 35,
         position = {0, 0, 0},
         rings = 64,
@@ -25,7 +25,7 @@ function init()
     -- Mercury
     add_planet{
         name = "mercury",
-        texturepath = "assets/graphics/mercury.jpg",
+        texturepath = "../assets/graphics/mercury.jpg",
         radius = 4,
         position = {70, 0, 0},
         rings = 24,
@@ -37,7 +37,7 @@ function init()
     -- Venus
     add_planet{
         name = "venus",
-        texturepath = "assets/graphics/venus.jpg",
+        texturepath = "../assets/graphics/venus.jpg",
         radius = 6,
         position = {110, 0, 0},
         rings = 28,
@@ -49,7 +49,7 @@ function init()
     -- Earth
     Earth = add_planet{
         name = "earth",
-        texturepath = "assets/graphics/earth.jpg",
+        texturepath = "../assets/graphics/earth.jpg",
         radius = 6.5,
         position = {160, 0, 0},
         rings = 32,
@@ -61,7 +61,7 @@ function init()
     -- Mars
     add_planet{
         name = "mars",
-        texturepath = "assets/graphics/mars.jpg",
+        texturepath = "../assets/graphics/mars.jpg",
         radius = 5,
         position = {210, 0, 0},
         rings = 28,
@@ -73,7 +73,7 @@ function init()
     -- Jupiter
     add_planet{
         name = "jupiter",
-        texturepath = "assets/graphics/jupiter.jpg",
+        texturepath = "../assets/graphics/jupiter.jpg",
         radius = 18,
         position = {300, 0, 0},
         rings = 48,
@@ -85,7 +85,7 @@ function init()
     -- Saturn
     add_planet{
         name = "saturn",
-        texturepath = "assets/graphics/saturn.jpg",
+        texturepath = "../assets/graphics/saturn.jpg",
         radius = 16,
         position = {380, 0, 0},
         rings = 48,
@@ -97,7 +97,7 @@ function init()
     -- Uranus
     add_planet{
         name = "uranus",
-        texturepath = "assets/graphics/uranus.jpg",
+        texturepath = "../assets/graphics/uranus.jpg",
         radius = 12,
         position = {460, 0, 0},
         rings = 40,
@@ -109,7 +109,7 @@ function init()
     -- Neptune
     add_planet{
         name = "neptune",
-        texturepath = "assets/graphics/neptune.jpg",
+        texturepath = "../assets/graphics/neptune.jpg",
         radius = 12,
         position = {540, 0, 0},
         rings = 40,

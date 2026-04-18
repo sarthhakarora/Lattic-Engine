@@ -4,7 +4,7 @@ function init()
     -- STATIC GIANTS
     add_planet{
         name = "sun",
-        texturepath = "assets/graphics/makemake.jpg",
+        texturepath = "../assets/graphics/makemake.jpg",
         radius = 30,
         position = {0, 0, 0},
         rings = 64,
@@ -15,7 +15,7 @@ function init()
 
     add_planet{
         name = "venus",
-        texturepath = "assets/graphics/venus.jpg",
+        texturepath = "../assets/graphics/venus.jpg",
         radius = 20,
         position = {400, 0, 0},
         rings = 48,
@@ -38,7 +38,7 @@ function init()
 
         add_planet{
             name = "dust_" .. i,
-            texturepath = "assets/graphics/ceres.jpg", 
+            texturepath = "../assets/graphics/ceres.jpg", 
             radius = 2.5,
             position = {x, y, z},
             rings = 6,
