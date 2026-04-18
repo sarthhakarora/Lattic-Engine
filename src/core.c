@@ -201,8 +201,8 @@ static void core_update(Core *core) {
   }
 
   Image img;
-  const char *path;
-  while (loader_poll(&img, &path)) {
+  char path[256];
+  while (loader_poll(&img, path)) {
     TextureEntry *entry = NULL;
     HASH_FIND_STR(texture_map, path, entry);
     if (entry) {
