@@ -71,22 +71,29 @@ void planet_draw(Planet *planet) {
     return;
   }
 
+  if (planet->texture && planet->texture->loaded) {
+    planet->model.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = planet->texture->texture;
+  }
+
   DrawModel(planet->model, planet->position, 1.0f, WHITE);
 }
 void planet_update(Planet *planet) {
   planet->model.transform = MatrixMultiply(MatrixRotateY(GetTime() * 0.1f),
                                            MatrixRotateX(GetTime() * 0.1f));
 }
-void planet_destroy(Planet *planet) {
-  if (!planet) {
+void planet_destroy(Planet **planet) {
+  if (!planet || !*planet) {
     return;
   }
-  UnloadModel(planet->model);
-  asset_release_texture(planet->texture_path);
+  UnloadModel((*planet)->model);
+  asset_release_texture((*planet)->texture_path);
 
-  free(planet->name);
+  free((*planet)->name);
 
-  planet->name = NULL;
-  planet->texture_path = NULL;
-  planet->texture = NULL;
+  (*planet)->name = NULL;
+  (*planet)->texture_path = NULL;
+  (*planet)->texture = NULL;
+
+  free(*planet);
+  (*planet) = NULL;
 }

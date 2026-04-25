@@ -129,6 +129,7 @@ int l_planet_unload(lua_State *L);
 
 // <-------- Setters -------->
 int l_set_world_gravity_constant(lua_State *L);
+int l_set_planet_position(lua_State *L);
 
 // <-------- Getters -------->
 int l_get_world_gravity_constant(lua_State *L);

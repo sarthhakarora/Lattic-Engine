@@ -74,6 +74,7 @@ void init_luaapi(const char *scriptPath, lua_State *L) {
   lua_register(L, "pause", l_pause);
   lua_register(L, "resume", l_resume);
 
+  lua_register(L, "set_planet_position", l_set_planet_position);
   lua_register(L, "is_key_down", l_IsKeyDown);
   lua_register(L, "is_key_up", l_IsKeyUp);
   lua_register(L, "is_key_pressed", l_IsKeyPressed);
@@ -100,6 +101,31 @@ int l_create_world(lua_State *L) {
   global_core->active_world = world_create();
 
   return 0;
+}
+
+int l_set_planet_position(lua_State *L) {
+    int id = luaL_checkinteger(L, 1);
+
+    luaL_checktype(L, 2, LUA_TTABLE);
+
+    lua_rawgeti(L, 2, 1);
+    lua_rawgeti(L, 2, 2);
+    lua_rawgeti(L, 2, 3);
+
+    Vector3 pos = {
+        luaL_checknumber(L, -3),
+        luaL_checknumber(L, -2),
+        luaL_checknumber(L, -1)
+    };
+
+    lua_pop(L, 3);
+
+    Planet *p = find_planet(&global_core->active_world, id);
+    if (p) {
+        p->position = pos;
+    }
+
+    return 0;
 }
 
 int l_world_add_planet(lua_State *L) {

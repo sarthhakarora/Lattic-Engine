@@ -295,15 +295,11 @@ void world_update(World *world) {
 Planet *find_planet(World *world, int64_t id) {
   if (!world || !world->valid)
     return NULL;
-
-  for (int i = 0; i < world->planet_count; i++) {
-    Planet *p = world->planets[i];
-
-    if (p && p->id == id) {
-      return p;
-    }
+  if (world->planets[id] != NULL || id < 0) {
+    return world->planets[id];
   }
-  return NULL;
+
+  return world->planets[id];
 }
 
 void world_unload_planet(World *world, int64_t id) {
@@ -315,7 +311,7 @@ void world_unload_planet(World *world, int64_t id) {
     Planet *planet = world->planets[i];
 
     if (planet && planet->id == id) {
-      planet_destroy(planet);
+      planet_destroy(&planet);
       free(planet);
 
       for (int j = i; j < world->planet_count - 1; j++) {
@@ -333,7 +329,7 @@ void world_unload_planet(World *world, int64_t id) {
 void world_destroy(World *world) {
   if (world->valid) {
     for (int i = 0; i < world->planet_count; i++) {
-      planet_destroy(world->planets[i]);
+      planet_destroy(&world->planets[i]);
       free(world->planets[i]);
       world->planets[i] = NULL;
     }

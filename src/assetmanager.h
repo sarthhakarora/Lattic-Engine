@@ -9,6 +9,7 @@ typedef struct {
     Texture2D texture;
     int refCount;
     bool loaded;
+    bool loading;
 } ManagedTexture;
 
 typedef struct {
@@ -17,13 +18,9 @@ typedef struct {
     UT_hash_handle hh;
 } TextureEntry;
 
-typedef struct {
-    Texture2D texture;
-    int refCount;
-} TextureAsset;
-
 extern TextureEntry *texture_map;
 
 ManagedTexture *asset_get_texture(const char *path);
 void asset_release_texture(const char *path);
+void asset_update(void);
 void asset_manager_shutdown(void);

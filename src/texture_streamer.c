@@ -1,5 +1,7 @@
 #include "texture_streamer.h"
 #include "platform/platform_win32_threading.h"
+#define MAX_JOBS 256
+#define MAX_PATH_LEN 256
 #include "stdio.h"
 
 #include <stdbool.h>
@@ -9,9 +11,13 @@ static PlatformThread *workerThread;
 static PlatformMutex *lock;
 static bool running;
 
-static const char **jobPaths;
-static int jobCount;
-static int jobIndex;
+typedef struct {
+    char path[MAX_PATH_LEN];
+} LoadJob;
+
+static LoadJob jobQueue[MAX_JOBS];
+static int jobHead = 0;
+static int jobTail = 0;
 
 static TextureStreamJob results[256];
 static int resultCount;
@@ -27,35 +33,39 @@ void loader_init(void) {
 void worker_proc(void *arg) {
   while (running) {
 
+    char local_path[MAX_PATH_LEN];
+    bool hasJob = false;
+
     mutex_lock(lock);
-    bool isJobAvi = (jobIndex < jobCount);
 
-    int currentIndex = jobIndex;
-    char local_path[256];
+    if (jobHead != jobTail) {
+      strncpy(local_path, jobQueue[jobHead].path, MAX_PATH_LEN);
+      local_path[MAX_PATH_LEN-1] = '\0';
 
-    if (isJobAvi) {
-      strncpy(local_path, jobPaths[currentIndex], 255);
-      local_path[255] = '\0';
+      jobHead = (jobHead + 1) % MAX_JOBS;
+      hasJob = true;
 
-      strncpy(results[currentIndex].path, local_path, 255);
-      results[currentIndex].path[255] = '\0';
-
-      jobIndex++;
     }
 
     mutex_unlock(lock);
 
-    if (isJobAvi) {
-      results[currentIndex].img = LoadImage(local_path);
-      results[currentIndex].imageLoaded = true;
+    if (hasJob) {
+      Image img = LoadImage(local_path);
 
-      if (results[currentIndex].img.data == NULL) {
-        results[currentIndex].failed = true;
-      } else {
-        mutex_lock(lock);
+      mutex_lock(lock);
+
+      if (resultCount < 256) {
+        strncpy(results[resultCount].path, local_path, 255);
+        results[resultCount].path[255] = '\0';
+
+        results[resultCount].img = img;
+        results[resultCount].imageLoaded = true;
+        results[resultCount].failed = (img.data == NULL);
+
         resultCount++;
-        mutex_unlock(lock);
       }
+
+      mutex_unlock(lock);
     } else {
       thread_sleep(1);
     }
@@ -64,9 +74,18 @@ void worker_proc(void *arg) {
 
 void loader_start(const char **paths, int count) {
   mutex_lock(lock);
-  jobPaths = paths;
-  jobCount = count;
-  jobIndex = 0;
+  for (int i = 0; i < count; i++) {
+    int next = (jobTail + 1) % MAX_JOBS;
+
+    if (next == jobHead) {
+      break;
+    }
+
+    strncpy(jobQueue[jobTail].path, paths[i], 255);
+    jobQueue[jobTail].path[255] = '\0';
+
+    jobTail = next;
+  }
   mutex_unlock(lock);
 }
 
@@ -91,7 +110,12 @@ bool loader_poll(Image *outImage, char *outPath) {
   return true;
 }
 
-bool loader_is_done(void) { return (jobIndex >= jobCount && resultCount == 0); }
+bool loader_is_done(void) {
+  mutex_lock(lock);
+  bool done = (jobHead == jobTail && resultCount == 0);
+  mutex_unlock(lock);
+  return done;
+}
 
 void loader_shutdown(void) {
   running = false;

@@ -174,7 +174,9 @@ void core_draw(Core *core) {
   ClearBackground(BLACK);
 
   if (core->active_world.valid) {
+    BeginBlendMode(BLEND_ADDITIVE);
     world_draw(&core->active_world);
+    EndBlendMode();
     update_lua(core->L);
   }
 
@@ -200,17 +202,7 @@ static void core_update(Core *core) {
     return;
   }
 
-  Image img;
-  char path[256];
-  while (loader_poll(&img, path)) {
-    TextureEntry *entry = NULL;
-    HASH_FIND_STR(texture_map, path, entry);
-    if (entry) {
-      entry->managed.texture = LoadTextureFromImage(img);
-      entry->managed.loaded = true;
-    }
-    UnloadImage(img);
-  }
+  asset_update();
 
   handle_cursor_input(core);
   enable_cursor(core);
