@@ -171,10 +171,8 @@ void core_draw(Core *core) {
   ClearBackground(BLACK);
 
   if (core->active_world.valid) {
-    update_lua(core->L);
-    // BeginBlendMode(BLEND_ADDITIVE);
     world_draw(&core->active_world);
-    EndBlendMode();
+    update_lua(core->L);
   }
 
   EndMode3D();

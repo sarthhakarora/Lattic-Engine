@@ -8,6 +8,7 @@
 #include <lauxlib.h>
 #include <lua.h>
 #include <lualib.h>
+#include <stdbool.h>
 
 #include "../core.h"
 
@@ -34,7 +35,7 @@ static void push_keyboard_keys(lua_State *L) {
 void init_lua(lua_State *L) {
   lua_getglobal(L, "init");
   if (!lua_isfunction(L, -1)) {
-    log_msg(LOG_LUA, LOG_LEVEL_ERROR, "Lua script must define init: %s", lua_tostring(L, -1));
+    log_msg(LOG_LUA, LOG_LEVEL_ERROR, "Lua script must define init: %s");
     lua_pop(L, 1);
     platform_throw_error("Lua script must define init", "init not found",
                          PLATFORM_SYSTEM_MODAL | PLATFORM_MSG_OK);
@@ -81,6 +82,8 @@ void init_luaapi(const char *scriptPath, lua_State *L) {
   lua_register(L, "is_key_down", l_IsKeyDown);
   lua_register(L, "is_key_up", l_IsKeyUp);
   lua_register(L, "is_key_pressed", l_IsKeyPressed);
+  lua_register(L, "begin_blend_mode", l_begin_blend_mode);
+  lua_register(L, "end_blend_mode", l_end_blend_mode);
 
   push_keyboard_keys(L);
 
@@ -89,7 +92,7 @@ void init_luaapi(const char *scriptPath, lua_State *L) {
                          "Script not loaded",
                          PLATFORM_SYSTEM_MODAL | PLATFORM_MSG_OK);
     const char *err = lua_tostring(L, -1);
-    log_msg(LOG_LUA, LOG_LEVEL_ERROR, "planet not found %s", err);
+    log_msg(LOG_LUA, LOG_LEVEL_ERROR, "script not loaded %s", err);
     lua_pop(L, 1);
   }
 }
@@ -268,6 +271,46 @@ int l_draw_grid(lua_State *L) {
     DrawGrid(size, spacing);
   }
 
+  return 0;
+}
+
+static int to_raylib_blend(int lua_mode) {
+    switch (lua_mode) {
+        case LUA_BLEND_ALPHA: return BLEND_ALPHA;
+        case LUA_BLEND_ADDITIVE: return BLEND_ADDITIVE;
+        case LUA_BLEND_MULTIPLIED: return BLEND_MULTIPLIED;
+        case LUA_BLEND_ADD_COLORS: return BLEND_ADD_COLORS;
+        case LUA_BLEND_SUBTRACT_COLORS: return BLEND_SUBTRACT_COLORS;
+        case LUA_BLEND_ALPHA_PREMULTIPLY: return BLEND_ALPHA_PREMULTIPLY;
+        case LUA_BLEND_CUSTOM: return BLEND_CUSTOM;
+        case LUA_BLEND_CUSTOM_SEPARATE: return BLEND_CUSTOM_SEPARATE;
+        default:
+            log_msg(LOG_LUA, LOG_LEVEL_ERROR, "invalid blend mode: %d", lua_mode);
+            return BLEND_ALPHA;
+    }
+}
+
+int l_begin_blend_mode(lua_State *L) {
+  blend_mode lua_mode = luaL_checkinteger(L, 1);
+  int mode = to_raylib_blend(lua_mode);
+
+  if (blend_active) {
+    log_msg(LOG_ENGINE, LOG_LEVEL_WARN, "blend mode already active");
+    return 0;
+  }
+
+  BeginBlendMode(mode);
+  blend_active = true;
+  return 0;
+}
+
+int l_end_blend_mode(lua_State *L) {
+  if (!blend_active) {
+    log_msg(LOG_ENGINE, LOG_LEVEL_WARN, "end_blend_mode called without begin");
+    return 0;
+  }
+  EndBlendMode();
+  blend_active = false;
   return 0;
 }
 

@@ -111,6 +111,21 @@
 #include <lua.h>
 #include <lualib.h>
 
+#include <stdbool.h>
+
+typedef enum {
+    LUA_BLEND_ALPHA = 0,
+    LUA_BLEND_ADDITIVE,
+    LUA_BLEND_MULTIPLIED,
+    LUA_BLEND_ADD_COLORS,
+    LUA_BLEND_SUBTRACT_COLORS,
+    LUA_BLEND_ALPHA_PREMULTIPLY,
+    LUA_BLEND_CUSTOM,
+    LUA_BLEND_CUSTOM_SEPARATE
+} blend_mode;
+
+static bool blend_active = false;
+
 // <-------- Core -------->
 void init_luaapi(const char *scriptPath, lua_State *L);
 void init_lua(lua_State *L);
@@ -138,6 +153,8 @@ int l_pause(lua_State *L);
 int l_resume(lua_State *L);
 int l_find_planet(lua_State *L);
 int l_draw_grid(lua_State *L);
+int l_begin_blend_mode(lua_State *L);
+int l_end_blend_mode(lua_State *L);
 
 // <-------- Input -------->
 int l_IsKeyPressed(lua_State *L);

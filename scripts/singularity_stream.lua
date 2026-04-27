@@ -103,6 +103,7 @@ function init()
 end
 
 function update()
+	begin_blend_mode(1)
 	if is_key_pressed(KEY.L) then
 		pause()
 	end
@@ -152,4 +153,5 @@ function update()
 		set_planet_position(j.id1, { x, j.h, z })
 		set_planet_position(j.id2, { x, -j.h, z })
 	end
+	end_blend_mode()
 end
