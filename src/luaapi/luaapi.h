@@ -107,9 +107,6 @@
 // ============================================================
 #pragma once
 
-#include "../planet.h"
-#include "../world.h"
-#include "raylib.h"
 #include <lauxlib.h>
 #include <lua.h>
 #include <lualib.h>

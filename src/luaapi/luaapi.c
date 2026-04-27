@@ -1,4 +1,5 @@
 #include "luaapi.h"
+#include "../log.h"
 #include "../planet.h"
 #include "../platform/platform_win32.h"
 #include "../world.h"
@@ -33,26 +34,28 @@ static void push_keyboard_keys(lua_State *L) {
 void init_lua(lua_State *L) {
   lua_getglobal(L, "init");
   if (!lua_isfunction(L, -1)) {
+    log_msg(LOG_LUA, LOG_LEVEL_ERROR, "Lua script must define init: %s", lua_tostring(L, -1));
     lua_pop(L, 1);
     platform_throw_error("Lua script must define init", "init not found",
-                         PLATFORM_SYSTEM_MODAL || PLATFORM_MSG_OK);
+                         PLATFORM_SYSTEM_MODAL | PLATFORM_MSG_OK);
     return;
   }
   if (lua_pcall(L, 0, 0, 0) != LUA_OK) {
-    printf("LUA INIT ERROR: %s\n", lua_tostring(L, -1));
+    log_msg(LOG_LUA, LOG_LEVEL_ERROR, "init error: %s", lua_tostring(L, -1));
     lua_pop(L, 1);
   }
 }
 void update_lua(lua_State *L) {
   lua_getglobal(L, "update");
   if (!lua_isfunction(L, -1)) {
+    log_msg(LOG_LUA, LOG_LEVEL_ERROR, "Lua script must define update");
     lua_pop(L, 1);
     platform_throw_error("Lua script must define update", "update not found",
-                         PLATFORM_SYSTEM_MODAL || PLATFORM_MSG_OK);
+                         PLATFORM_SYSTEM_MODAL | PLATFORM_MSG_OK);
     return;
   }
   if (lua_pcall(L, 0, 0, 0) != LUA_OK) {
-    printf("LUA INIT ERROR: %s\n", lua_tostring(L, -1));
+    log_msg(LOG_LUA, LOG_LEVEL_ERROR, "update error: %s", lua_tostring(L, -1));
     lua_pop(L, 1);
   }
 }
@@ -84,9 +87,9 @@ void init_luaapi(const char *scriptPath, lua_State *L) {
   if (luaL_dofile(L, scriptPath)) {
     platform_throw_error("Script is not loaded check file paths",
                          "Script not loaded",
-                         PLATFORM_SYSTEM_MODAL || PLATFORM_MSG_OK);
+                         PLATFORM_SYSTEM_MODAL | PLATFORM_MSG_OK);
     const char *err = lua_tostring(L, -1);
-    printf("LUA ERROR: %s\n", err);
+    log_msg(LOG_LUA, LOG_LEVEL_ERROR, "planet not found %s", err);
     lua_pop(L, 1);
   }
 }
@@ -94,7 +97,7 @@ void init_luaapi(const char *scriptPath, lua_State *L) {
 int l_create_world(lua_State *L) {
   if (!global_core) {
     platform_throw_error("Engine not initialized", "CRITICAL ENGINE ERROR",
-                         PLATFORM_SYSTEM_MODAL || PLATFORM_MSG_OK);
+                         PLATFORM_SYSTEM_MODAL | PLATFORM_MSG_OK);
     return luaL_error(L, "Engine not initialized");
   }
 
@@ -131,12 +134,12 @@ int l_set_planet_position(lua_State *L) {
 int l_world_add_planet(lua_State *L) {
   if (!global_core || !global_core->active_world.valid) {
     platform_throw_error("World not created", "World Creation Error",
-                         PLATFORM_SYSTEM_MODAL || PLATFORM_MSG_OK);
+                         PLATFORM_SYSTEM_MODAL | PLATFORM_MSG_OK);
     return luaL_error(L, "World not created");
   }
   if (!lua_istable(L, 1)) {
     platform_throw_error("Planet Expects Table", "Syntax Error",
-                         PLATFORM_SYSTEM_MODAL || PLATFORM_MSG_OK);
+                         PLATFORM_SYSTEM_MODAL | PLATFORM_MSG_OK);
     return luaL_error(L, "add_planet expects a table");
   }
 
@@ -157,8 +160,8 @@ int l_world_add_planet(lua_State *L) {
   lua_getfield(L, 1, "position");
   if (!lua_istable(L, -1)) {
     platform_throw_error("Position Expects Table", "Syntax Error",
-                         PLATFORM_SYSTEM_MODAL || PLATFORM_MSG_OK);
-    return luaL_error(L, "postion must be a table");
+                         PLATFORM_SYSTEM_MODAL | PLATFORM_MSG_OK);
+    return luaL_error(L, "position must be a table");
   }
 
   lua_rawgeti(L, -1, 1);
@@ -178,7 +181,7 @@ int l_world_add_planet(lua_State *L) {
   lua_pop(L, 1);
 
   lua_getfield(L, 1, "mass");
-  int mass = luaL_checknumber(L, -1);
+  int mass = luaL_checkinteger(L, -1);
   lua_pop(L, 1);
 
   lua_getfield(L, 1, "has_gravity");
@@ -206,6 +209,7 @@ int l_set_world_gravity_constant(lua_State *L) {
         "Trying to set gravity before creation of world", "User error",
         PLATFORM_ICON_WARNING | PLATFORM_MSG_OK);
   }
+  return 0;
 }
 
 int l_get_world_gravity_constant(lua_State *L) {
@@ -244,7 +248,7 @@ int l_resume(lua_State *L) {
 }
 
 int l_find_planet(lua_State *L) {
-  int64_t id = luaL_checknumber(L, 1);
+  int64_t id = luaL_checkinteger(L, 1);
 
   Planet *planet = find_planet(&global_core->active_world, id);
   if (planet == NULL) {
@@ -305,7 +309,7 @@ int l_planet_unload(lua_State *L) {
 
   Planet *planet = find_planet(&global_core->active_world, id);
   if (planet == NULL) {
-    printf("ERROR: PLANET NOT FOUND");
+    log_msg(LOG_LUA, LOG_LEVEL_ERROR, "planet not found");
     return 0;
   }
 

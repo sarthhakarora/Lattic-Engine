@@ -1,15 +1,12 @@
 #include "assetmanager.h"
-#include "platform/platform_win32.h"
+#include "log.h"
 #include "raylib.h"
-#include "raymath.h"
-#include "stdlib.h"
 #include "texture_streamer.h"
 
 #include "app.h"
 #include "camera.h"
 #include "core.h"
 #include "luaapi/luaapi.h"
-#include "planet.h"
 #include "ui/ui.h"
 #include "world.h"
 
@@ -174,10 +171,10 @@ void core_draw(Core *core) {
   ClearBackground(BLACK);
 
   if (core->active_world.valid) {
-    BeginBlendMode(BLEND_ADDITIVE);
+    update_lua(core->L);
+    // BeginBlendMode(BLEND_ADDITIVE);
     world_draw(&core->active_world);
     EndBlendMode();
-    update_lua(core->L);
   }
 
   EndMode3D();
@@ -228,9 +225,8 @@ void core_run(Core *core) {
       app_run(core, &core->core_active);
       if (core->isFirstFrame) {
         double now = GetTime();
-        printf("--------------------------------\nBOOT: %.3fms taken to "
-               "boot\n--------------------------------\n",
-               (now - core->bootTime) * 1000);
+        log_msg(LOG_ENGINE, LOG_LEVEL_INFO, "boot time: %.3f ms",
+          (now - core->bootTime) * 1000.0);
         core->isFirstFrame = false;
       }
     }

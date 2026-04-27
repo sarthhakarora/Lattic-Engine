@@ -1,8 +1,4 @@
-#include <stdio.h>
-#include "raylib.h"
-#include "luaapi/luaapi.h"
 #include "core.h"
-#include "app.h"
 
 Core *global_core = NULL;
 
