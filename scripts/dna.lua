@@ -57,6 +57,8 @@ function init()
 	end
 end
 
+function draw() end
+
 function update()
 	draw_grid(0, 20)
 

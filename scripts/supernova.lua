@@ -24,6 +24,8 @@ function init()
 	})
 end
 
+function draw() end
+
 function update()
 	if is_key_pressed(KEY.L) then
 		pause()

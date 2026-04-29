@@ -102,8 +102,11 @@ function init()
 	end
 end
 
+function draw()
+	begin_blend_mode(BLEND.ADDITIVE)
+end
+
 function update()
-	begin_blend_mode(1)
 	if is_key_pressed(KEY.L) then
 		pause()
 	end
