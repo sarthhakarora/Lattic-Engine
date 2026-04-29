@@ -192,6 +192,7 @@ static void core_update(Core *core) {
     core->core_active = false;
     if (core->active_world.valid) {
       world_destroy(&core->active_world);
+      core->blendMode = 0;
       core->active_world = (World){0};
       core->active_world.valid = false;
     }

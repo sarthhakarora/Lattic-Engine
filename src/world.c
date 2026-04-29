@@ -7,6 +7,7 @@
 #include "raymath.h"
 #include "stdlib.h"
 #include <float.h>
+#include <setjmp.h>
 #include <stdbool.h>
 
 extern Core *global_core;
@@ -226,12 +227,21 @@ static void world_ui(World *world) {
 
 void world_draw(World *world) {
   world_ui(world);
-  
-  BeginBlendMode(to_raylib_blend(global_core->blendMode));
+
+  bool useBlend = global_core->is_blendMode;
+  int mode = global_core->blendMode;
+
+  global_core->is_blendMode = false;
+
+  if(useBlend) {
+    BeginBlendMode(to_raylib_blend(useBlend));
+  }
   for (int i = 0; i < world->planet_count; i++) {
     planet_draw(world->planets[i]);
   }
-  EndBlendMode();
+  if(useBlend) {
+    EndBlendMode();
+  }
 }
 
 void world_update(World *world) {
@@ -298,8 +308,11 @@ void world_update(World *world) {
 Planet *find_planet(World *world, int64_t id) {
   if (!world || !world->valid)
     return NULL;
-  if (world->planets[id] != NULL || id < 0) {
-    return world->planets[id];
+  if (id < 0 || id >= world->planet_count) {
+    return NULL;
+  }
+  if (world->planets[id] == NULL) {
+    return NULL;
   }
 
   return world->planets[id];

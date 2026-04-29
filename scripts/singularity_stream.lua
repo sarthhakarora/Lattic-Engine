@@ -156,5 +156,4 @@ function update()
 		set_planet_position(j.id1, { x, j.h, z })
 		set_planet_position(j.id2, { x, -j.h, z })
 	end
-	end_blend_mode()
 end

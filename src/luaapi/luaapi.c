@@ -168,6 +168,12 @@ int l_set_planet_position(lua_State *L) {
     lua_pop(L, 3);
 
     Planet *p = find_planet(&global_core->active_world, id);
+    if (!p) return 0;
+
+    if ((uintptr_t)p == UINTPTR_MAX) {
+        log_msg(LOG_LUA, LOG_LEVEL_ERROR, "invalid planet pointer for id %d", id);
+        return 0;
+    }
     if (p) {
         p->position = pos;
     }
@@ -321,6 +327,7 @@ int l_begin_blend_mode(lua_State *L) {
   int mode = to_raylib_blend(lua_mode);
 
   global_core->blendMode = mode;
+  global_core->is_blendMode = true;
 
   return 0;
 }

@@ -15,6 +15,7 @@ typedef struct {
   const int screenHeight;
   bool core_active;
   bool program_active;
+  bool is_blendMode;
   int blendMode;
 
   float bootTime;
