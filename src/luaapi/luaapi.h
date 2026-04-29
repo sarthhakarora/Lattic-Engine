@@ -113,23 +113,27 @@
 
 #include <stdbool.h>
 
-typedef enum {
-    LUA_BLEND_ALPHA = 0,
-    LUA_BLEND_ADDITIVE,
-    LUA_BLEND_MULTIPLIED,
-    LUA_BLEND_ADD_COLORS,
-    LUA_BLEND_SUBTRACT_COLORS,
-    LUA_BLEND_ALPHA_PREMULTIPLY,
-    LUA_BLEND_CUSTOM,
-    LUA_BLEND_CUSTOM_SEPARATE
-} blend_mode;
+#define BLEND_MODE_LIST \
+    X(ALPHA) \
+    X(ADDITIVE) \
+    X(MULTIPLIED) \
+    X(ADD_COLORS) \
+    X(SUBTRACT_COLORS) \
+    X(ALPHA_PREMULTIPLY) \
+    X(CUSTOM) \
+    X(CUSTOM_SEPARATE)
 
-static bool blend_active = false;
+typedef enum {
+#define X(name) LUA_BLEND_##name,
+    BLEND_MODE_LIST
+#undef X
+} blendMode;
 
 // <-------- Core -------->
 void init_luaapi(const char *scriptPath, lua_State *L);
 void init_lua(lua_State *L);
 void update_lua(lua_State *L);
+void draw_lua(lua_State *L);
 
 // <-------- World Creation -------->
 int l_create_world(lua_State *L);
@@ -154,7 +158,7 @@ int l_resume(lua_State *L);
 int l_find_planet(lua_State *L);
 int l_draw_grid(lua_State *L);
 int l_begin_blend_mode(lua_State *L);
-int l_end_blend_mode(lua_State *L);
+int to_raylib_blend(int lua_mode);
 
 // <-------- Input -------->
 int l_IsKeyPressed(lua_State *L);

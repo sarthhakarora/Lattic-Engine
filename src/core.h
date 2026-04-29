@@ -1,11 +1,7 @@
 #pragma once
 
-#include "raylib.h"
-
 #include "camera.h"
 #include "lua.h"
-#include "planet.h"
-#include "string.h"
 #include "world.h"
 
 typedef struct {
@@ -19,6 +15,7 @@ typedef struct {
   const int screenHeight;
   bool core_active;
   bool program_active;
+  int blendMode;
 
   float bootTime;
   float bootStart;

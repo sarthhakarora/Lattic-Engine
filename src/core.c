@@ -32,6 +32,7 @@ Core core_create(CoreArgs args) {
       .screenHeight = 720,
       .program_active = true,
       .core_active = false,
+      .blendMode = 0,
 
       .bootTime = 0.0f,
       .bootStart = 0.0f,
@@ -171,8 +172,8 @@ void core_draw(Core *core) {
   ClearBackground(BLACK);
 
   if (core->active_world.valid) {
+    draw_lua(core->L);
     world_draw(&core->active_world);
-    update_lua(core->L);
   }
 
   EndMode3D();
@@ -206,6 +207,8 @@ static void core_update(Core *core) {
 
   if (core->active_world.valid) {
     pause_time(&core->active_world);
+    update_lua(core->L);
+    update_camera(&core->camera);
     world_update(&core->active_world);
   }
 
@@ -216,8 +219,8 @@ static void core_update(Core *core) {
 void core_run(Core *core) {
   while (core->program_active == true && !WindowShouldClose()) {
     if (core->core_active) {
-      core_update(core);
       core_draw(core);
+      core_update(core);
     }
     if (!core->core_active) {
       app_run(core, &core->core_active);

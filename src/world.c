@@ -1,13 +1,13 @@
+#include "raylib.h"
 #include "world.h"
+#include "luaapi/luaapi.h"
 #include "core.h"
 #include "planet.h"
 #include "raylib.h"
 #include "raymath.h"
 #include "stdlib.h"
-#include "string.h"
 #include <float.h>
 #include <stdbool.h>
-#include <stdio.h>
 
 extern Core *global_core;
 
@@ -226,9 +226,12 @@ static void world_ui(World *world) {
 
 void world_draw(World *world) {
   world_ui(world);
+  
+  BeginBlendMode(to_raylib_blend(global_core->blendMode));
   for (int i = 0; i < world->planet_count; i++) {
     planet_draw(world->planets[i]);
   }
+  EndBlendMode();
 }
 
 void world_update(World *world) {
