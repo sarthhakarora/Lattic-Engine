@@ -1,7 +1,7 @@
-#include "assetmanager.h"
+#include "assets/assetmanager.h"
 #include "log.h"
 #include "raylib.h"
-#include "texture_streamer.h"
+#include "assets/texture_streamer.h"
 
 #include "app.h"
 #include "camera.h"

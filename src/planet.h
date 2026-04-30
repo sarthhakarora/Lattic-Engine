@@ -2,7 +2,7 @@
 
 #include "raylib.h"
 #include <stdbool.h>
-#include "assetmanager.h"
+#include "assets/assetmanager.h"
 
 typedef struct {
     char* name;

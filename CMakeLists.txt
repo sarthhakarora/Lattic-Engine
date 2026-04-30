@@ -14,9 +14,9 @@ add_executable(latticEngine
     src/planet.c
     src/world.c
     src/app.c
-    src/assetmanager.c
-    src/texture_streamer.c
     src/log.c
+    src/assets/assetmanager.c
+    src/assets/texture_streamer.c
     src/ui/ui.c
     src/ui/ui_widgets.c
     src/platform/platform_win32.c

@@ -1,5 +1,4 @@
 #include "assetmanager.h"
-#include "planet.h"
 #include "raylib.h"
 #include "texture_streamer.h"
 #include "uthash.h"

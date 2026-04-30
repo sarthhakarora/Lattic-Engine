@@ -1,5 +1,5 @@
 #include "planet.h"
-#include "assetmanager.h"
+#include "assets/assetmanager.h"
 #include "raylib.h"
 #include "raymath.h"
 #include "stdlib.h"

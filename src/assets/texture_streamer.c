@@ -1,5 +1,5 @@
 #include "texture_streamer.h"
-#include "platform/platform_win32_threading.h"
+#include "../platform/platform_win32_threading.h"
 #define MAX_JOBS 256
 #define MAX_PATH_LEN 256
 #include "stdio.h"
