@@ -2,6 +2,7 @@
 #include "core.h"
 #include "luaapi/luaapi.h"
 #include "platform/platform_win32.h"
+#include "assets/shadermanager.h"
 #include "raygui.h"
 #include "raylib.h"
 #include "stdlib.h"
@@ -124,34 +125,32 @@ static void settings_menu(Core *core, int *choice, char *choiceText,
   }
 }
 
-static void draw_app(Core *core, int *choice, char *choiceText,
-                     ScriptList *scripts, bool *editMode, int *appstate) {
-
-  BeginDrawing();
-  ClearBackground(BLACK); // ← ONLY here
-
+static void bgshader() {
   float time = GetTime();
   Vector2 mouse = GetMousePosition();
   Vector2 res = {GetScreenWidth(), GetScreenHeight()};
 
-  static Shader bgShader;
-  static bool shaderLoaded = false;
-
-  if (!shaderLoaded) {
-    bgShader = LoadShader(0, "../assets/shaders/bg.fs");
-    shaderLoaded = true;
+  static bool init = false;
+  static ShaderData bgshader;
+  if(!init) {
+    bgshader = shader_create(NULL, "assets/shaders/bg.fs");
+    init = true;
+    shader_load(&bgshader);
   }
 
-  SetShaderValue(bgShader, GetShaderLocation(bgShader, "time"), &time,
-                 SHADER_UNIFORM_FLOAT);
-  SetShaderValue(bgShader, GetShaderLocation(bgShader, "mouse"), &mouse,
-                 SHADER_UNIFORM_VEC2);
-  SetShaderValue(bgShader, GetShaderLocation(bgShader, "resolution"), &res,
-                 SHADER_UNIFORM_VEC2);
+  shader_set_float(&bgshader, "time", time);
+  shader_set_vec2(&bgshader, "resolution", res.x, res.y);
 
-  BeginShaderMode(bgShader);
-  DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), WHITE);
+  BeginShaderMode(bgshader.shader);
+  DrawRectangle(0, 0, res.x,res.y, WHITE);
   EndShaderMode();
+
+}
+static void draw_app(Core *core, int *choice, char *choiceText,
+                     ScriptList *scripts, bool *editMode, int *appstate) {
+  BeginDrawing();
+  ClearBackground(BLACK);
+  bgshader();
 
   /// BeginMode2D(camera);
 

@@ -134,18 +134,29 @@ void init_luaapi(const char *scriptPath, lua_State *L);
 void init_lua(lua_State *L);
 void update_lua(lua_State *L);
 void draw_lua(lua_State *L);
+int l_shader_begin(lua_State *L);
+int l_shader_end(lua_State *L);
 
 // <-------- World Creation -------->
 int l_create_world(lua_State *L);
 int l_world_add_planet(lua_State *L);
 
+// <-------- Load functions -------->
+int l_shader_create(lua_State *L);
+int l_shader_load(lua_State *L);
+
 // <-------- Unload functions -------->
 int l_world_unload(lua_State *L);
 int l_planet_unload(lua_State *L);
+int l_shader_unload(lua_State *L);
 
 // <-------- Setters -------->
 int l_set_world_gravity_constant(lua_State *L);
 int l_set_planet_position(lua_State *L);
+int l_shader_set_float(lua_State *L);
+int l_shader_set_vec2(lua_State *L);
+int l_shader_set_vec3(lua_State *L);
+int l_shader_set_texture(lua_State *L);
 
 // <-------- Getters -------->
 int l_get_world_gravity_constant(lua_State *L);
