@@ -234,7 +234,7 @@ void world_draw(World *world) {
   global_core->is_blendMode = false;
 
   if(useBlend) {
-    BeginBlendMode(to_raylib_blend(useBlend));
+    BeginBlendMode(to_raylib_blend(mode));
   }
   for (int i = 0; i < world->planet_count; i++) {
     planet_draw(world->planets[i]);

@@ -17,6 +17,7 @@ add_executable(latticEngine
     src/log.c
     src/assets/assetmanager.c
     src/assets/shadermanager.c
+    src/assets/skybox.c
     src/assets/texture_streamer.c
     src/ui/ui.c
     src/ui/ui_widgets.c

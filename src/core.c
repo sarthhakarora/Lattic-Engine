@@ -1,4 +1,5 @@
 #include "assets/assetmanager.h"
+#include "assets/skybox.h"
 #include "log.h"
 #include "raylib.h"
 #include "assets/texture_streamer.h"
@@ -23,6 +24,8 @@ CoreArgs core_parce_args(int argc, char **argv) {
 
   return args;
 }
+
+Sky sky;
 
 Core core_create(CoreArgs args) {
   ChangeDirectory(GetApplicationDirectory());
@@ -65,6 +68,9 @@ Core core_create(CoreArgs args) {
 
   core.active_world = (World){0};
   core.active_world.valid = false;
+
+  sky = sky_create(1000.0f, "assets/shaders/sky.vs", "assets/shaders/sky.fs");
+  sky_load(&sky);
 
   loader_init();
 
@@ -168,8 +174,13 @@ static void draw_status_panel(Core *core) {
 
 void core_draw(Core *core) {
   BeginDrawing();
-  BeginMode3D(core->camera.camera);
   ClearBackground(BLACK);
+  BeginMode3D(core->camera.camera);
+
+  float t = GetTime();
+  shader_set_float(&sky.shader, "time", t);
+
+  sky_draw(&sky, core->camera.camera);
 
   if (core->active_world.valid) {
     draw_lua(core->L);
@@ -238,6 +249,7 @@ void core_run(Core *core) {
   }
 }
 void core_destroy(Core *core) {
+  sky_unload(&sky);
   if (core->active_world.valid) {
     world_destroy(&core->active_world);
   }
