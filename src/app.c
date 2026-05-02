@@ -5,6 +5,7 @@
 #include "assets/shadermanager.h"
 #include "raygui.h"
 #include "raylib.h"
+#include "raymath.h"
 #include "stdlib.h"
 #include "string.h"
 #include "ui/ui_widgets.h"
@@ -46,6 +47,7 @@ static void main_menu(Core *core, int *choice, char *choiceText,
                            400, tilesize.y};
 
   Vector2 mousepos = GetMousePosition();
+  Vector2 screenSize = (Vector2){GetScreenWidth(), GetScreenHeight()};
 
   static bool settingsButtonPressed;
   static bool startButtonPressed;
@@ -103,6 +105,38 @@ static void main_menu(Core *core, int *choice, char *choiceText,
   if (settingsButtonPressed) {
     *appstate = APP_STATE_SETTINGS;
   }
+
+  static Texture2D luaImg;
+  static Texture2D raylibImg;
+
+  float size = Clamp(screenSize.x / 20.0f, 32.0f, 64.0f);
+
+  Rectangle luaRect = {
+      screenSize.x - size - 10,
+      screenSize.y - size - 10,
+      size,
+      size
+  };
+
+  Rectangle raylibRect = {
+      luaRect.x - size - 10,
+      luaRect.y,
+      size,
+      size
+  };
+
+  if (!IsTextureValid(luaImg)) {
+      luaImg = LoadTexture("assets/lua.png");
+  }
+  if (!IsTextureValid(raylibImg)) {
+      raylibImg = LoadTexture("assets/raylib.png");
+  }
+
+  Rectangle luaSrc = {0, 0, (float)luaImg.width, (float)luaImg.height};
+  Rectangle raylibSrc = {0, 0, (float)raylibImg.width, (float)raylibImg.height};
+
+  DrawTexturePro(luaImg, luaSrc, luaRect, (Vector2){0,0}, 0.0f, WHITE);
+  DrawTexturePro(raylibImg, raylibSrc, raylibRect, (Vector2){0,0}, 0.0f, WHITE);
 }
 
 static void settings_menu(Core *core, int *choice, char *choiceText,
