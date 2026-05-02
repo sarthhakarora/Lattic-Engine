@@ -1,6 +1,6 @@
 # Lattic Engine
 
-Lettic engine is a real time **3D orbital mechanics simulator** written in **C** using **raylib**.  
+Lattic engine is a real time **3D orbital mechanics simulator** written in **C** using **raylib**.  
 This project simulates gravitational interaction between celestial bodies using Newtonian physics and numerical integration.
 
 The goal of this project was **not ultra realism or NASA level accuracy**, but to:
@@ -10,7 +10,7 @@ The goal of this project was **not ultra realism or NASA level accuracy**, but t
 - understand optimization techniques with run-time rendering 
 - explore multi-threading
 - visualize orbital motion in 3D
-- **and most Importantly** have a fun engine to play around with!
+- **and most importantly** have a fun engine to play around with!
 
 ---
 
@@ -41,17 +41,22 @@ The goal of this project was **not ultra realism or NASA level accuracy**, but t
 - Freefly 3D camera
 - Multiple gravity sources supported
 - Native windows support and linux support (via wine)
-- Better UI/UX implementation with more properties
+- Real-time UI/UX implementation
 - Multi-threaded asset loading for faster loading times
 - Cross-platform builds and cross completion
 - Grid and debug rendering tools
+- Skybox
 
 ---
 
 ## Features I plan on adding
 
-- Orbit trails
-- Skybox
+- Orbit trails visual clarity
+- Improved graphics through support for features such as Normal maps, Bloom and Custom Shaders
+- Multi-threaded or hardware accelerated physics
+- Support for O<sup>n</sup> physics
+- Support for SI units for research
+- Graphic scaling options for low end systems
 
 ---
 
@@ -59,6 +64,7 @@ The goal of this project was **not ultra realism or NASA level accuracy**, but t
 
 - Einstein orbital physics / General relativity
 - Ray or path tracing
+- GUI based creation simulations (Engine relies on its Lua API for simulations creation)
 
 ---
 
@@ -87,7 +93,7 @@ The simulator uses a **velocity aware Verlet / semi-implicit integrator**:
 **x(t+dt) = x(t) + v(t)·dt + ½a(t)·dt²**  
 **v(t+dt) = v(t) + ½(a(t) + a(t+dt))·dt**
 
-In simpler terms, velocity is updated using the **average acceleration over the timestep**, rather than assuming constant acceleration as in Euler integration due to there being a limited timestep (in other words fps or calulations per second) and IEEE-754 causing small numarical errors **but this is not the primary cause** of instablity unstable orbits.  
+In simpler terms, velocity is updated using the **average acceleration over the timestep**, rather than assuming constant acceleration as in Euler integration due to there being a limited timestep (in other words fps or calculation per second) and IEEE-754 causing small numerical errors **but this is not the primary cause** of instability unstable orbits.  
 This is more stable than **naive Euler integration** and helps **reduce energy drift**.
 
 ---
@@ -96,11 +102,11 @@ This is more stable than **naive Euler integration** and helps **reduce energy d
 
 This engine supports loading simulations via Lua scripts.
 
-On startup, the engine scans the scripts folder and allows selection a simluation through the user interface. Each script defines a world, planets and initial conditions.
+On startup, the engine scans the scripts folder and allows selection a simulation through the user interface. Each script defines a world, planets and initial conditions.
 
-Several example simulations are included to demonstare performance, stablity and orbital behavior. Feel free to try them out and have fun!
+Several example simulations are included to demonstrate performance, stability and orbital behavior. Feel free to try them out and have fun!
 
-Note: lower values in the scripts if you notice bad perfromance (more optimaiztions are on the way but hardware limitaions can also cause this the values have been tuned for my high end pc with a 7800xt, 32gb ddr5 and ryzen 5 7600x)
+Note: lower values in the scripts if you notice bad performance (more optimizations are on the way but hardware limitations can also cause this the values have been tuned for my high end pc with a 7800xt, 32gb ddr5 and ryzen 5 7600x)
 
 ---
 
@@ -187,6 +193,12 @@ They are not required to build the project.
 ```
 
 ---
+
+## Performance / Scaling
+
+The engine is designed to scale across different hardware depending on simulation size.
+
+Performance benchmarks will be added after testing across multiple systems.
 
 ## Tech Used
 
